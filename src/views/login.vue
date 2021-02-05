@@ -106,8 +106,8 @@ export default {
     return {
       // 登录表单
       form: {
-        phone: "999",
-        password: "123"
+        phone: "13431709114",
+        password: "3479082..."
       },
       // 注册表单
       registFrom: {
@@ -164,11 +164,16 @@ export default {
       this.$refs.loginFormRef.validate(async valid => {
         if (!valid) return;
         // 发送请求
-        const res = await this.$http.post("/tSeehopeTeacher/login", this.form);
+        const { data: res } = await this.$http.post(
+          "/tabUser/login",
+          this.form
+        );
         // 登录失败
-        if (res.data.code !== 200) return this.$message.error(res.data.message);
+        if (!res.success) return this.$message.error(res.message);
         // 登录成功
-        this.$message.success(res.data.message);
+        this.$message.success(res.message);
+        // 记录token
+        window.sessionStorage.setItem("token",res.data.user.id);
         // 路由跳转
         this.$router.push("/home");
       });
@@ -182,10 +187,17 @@ export default {
         if (!valid) return;
         // 发送请求
         const { data: res } = await this.$http.post(
-          "/tab/user/regist",
+          "/tabUser/regist",
           this.registFrom
         );
-        console.log(data);
+        // 请求失败
+        if (!res.success) return this.$message.error(res.message);
+        // 注册成功，弹框提示
+        this.$message.success(res.message);
+        // 自动登录
+        this.form.phone = this.registFrom.phone;
+        this.form.password = this.registFrom.password;
+        this.login();
       });
     }
   }

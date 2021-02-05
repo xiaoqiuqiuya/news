@@ -7,7 +7,9 @@
       </div>
       <el-menu mode="horizontal">
         <el-menu-item index="0"></el-menu-item>
-        <el-menu-item index="1">首页</el-menu-item>
+        <el-menu-item index="1">
+          <a href="/index">首页</a>
+        </el-menu-item>
         <el-submenu index="2">
           <template slot="title">新闻热榜</template>
           <el-menu-item index="2-1">周榜</el-menu-item>
@@ -15,8 +17,10 @@
           <el-menu-item index="2-3">年度大事件</el-menu-item>
         </el-submenu>
         <el-menu-item index="3">通知</el-menu-item>
-        <el-menu-item index="3">留言板</el-menu-item>
-        <el-menu-item index="3">
+        <el-menu-item index="4">
+          <a href="/publish">发布</a>
+          </el-menu-item>
+        <el-menu-item index="5">
           <el-button type="info" @click="logout">退出</el-button>
         </el-menu-item>
       </el-menu>
@@ -47,11 +51,10 @@
     width: 48px;
     height: 48px;
   }
-
 }
 .el-main {
-  background-color: #ffffff ;
-  padding-top: 0 ;
+  background-color: #ffffff;
+  padding-top: 0;
 }
 </style>
 
@@ -66,6 +69,10 @@ export default {
     logout() {
       window.sessionStorage.clear();
       this.$router.push("/login");
+    },
+    // 进入发布页
+    publish() {
+      this.$router.push("/publish");
     }
   }
 };

@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Login from '../views/login'
 import home from "../views/home"
 import index from "../components/index"
+import publish from "../views/publish"
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,9 @@ const routes = [{
     children:[{
       path:"/index",
       component:index
+    },{
+      path:"/publish",
+      component:publish
     }]
   }
 ]
@@ -30,5 +34,14 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+// 拦截
+// router.beforeEach((to, form, next) => {
+//   if (to.path == "/login") return next();
+//   // 获取token
+//   const token = window.sessionStorage.getItem("token");
+//   if (!token) return next("/login");
+//   next();
+// })
 
 export default router
