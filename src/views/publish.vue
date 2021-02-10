@@ -7,40 +7,171 @@
       <el-col :offset="2" :span="16">
         <!-- 主体内容 -->
         <el-card class="news_list">
-          <el-form ref="loginFormRef" label-width="0px" :model="article" >
-            <el-input  size="large" v-model="article.title">
-              <template slot="prepend">请输入标题</template>
-            </el-input>
-
-            <el-form-item prop>
-              <el-input type="textarea" :rows="10" v-model="article.content" ></el-input>
+          <el-form label-width="0px" :model="news">
+            <el-form-item>
+              <el-input size="large" v-model="news.title">
+                <template slot="prepend">请输入标题</template>
+              </el-input>
+            </el-form-item>
+            <el-form-item>
+              <editor-bar v-model="detail" :isClear="isClear" @change="change"></editor-bar>
             </el-form-item>
           </el-form>
         </el-card>
       </el-col>
       <!-- 右边 -->
-      <el-col :span="6">
+      <el-col :span="6" class="right">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <span>推荐阅读</span>
+            <el-button type="success" plain @click="btnSave">保存为草稿</el-button>
+            <el-button type="warning" plain @click="btnPost">发布</el-button>
           </div>
           <!-- 推荐列表 -->
-          <div class="hot_list"></div>
+          <div class="hot_list">
+            <el-form :model="news">
+              <!-- 描述 -->
+              <el-input
+                type="textarea"
+                :autosize="{ minRows: 4, maxRows: 4}"
+                placeholder="【选填】请简要描述该内容"
+                v-model="news.description"
+                resize="none"
+              ></el-input>
+              <p>原创声明</p>
+              <!-- 是否原创 -->
+              <el-switch v-model="news.original" active-text="原创" inactive-text="非原创 "></el-switch>
+              <p>原文链接</p>
+              <!-- 原文连接 -->
+              <el-input v-model="news.originalLink" placeholder="请输入内容" :disabled="news.original"></el-input>
+              <p>添加分类标签【可多选】</p>
+
+              <!-- 已选标签 -->
+              <div class="tags-list">
+                <el-button
+                  class="btn-tag"
+                  v-for="(item,index) in selectedTags"
+                  :key="item.id"
+                  size="mini"
+                >
+                  {{item.name}}
+                  <i class="el-icon-close" @click="remove(index)"></i>
+                </el-button>
+              </div>
+
+              <!-- 标签选择框 -->
+              <el-popover placement="bottom" width="200" trigger="click">
+                <i slot="reference" class="btn-add-tags el-icon-circle-plus-outline"></i>
+                <el-button
+                  class="btn-tag"
+                  v-for="item in tags"
+                  :key="item.id"
+                  size="mini"
+                  @click="addTag(item.id,item.name)"
+                >{{item.name}}</el-button>
+              </el-popover>
+            </el-form>
+          </div>
         </el-card>
       </el-col>
     </el-row>
   </div>
 </template>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+const E = window.wangEditor;
+const editor = new E("#text1");
+editor.create();
+</script>
+
 <script>
+import EditorBar from "../components/editor";
+
 export default {
   data() {
     return {
-      article: {
+      //
+      isClear: false,
+      dialogVisible: false,
+      detail: "",
+      value: "",
+      ids: [],
+      news: {
+        userId:"",
         title: "",
-        content: ""
+        content: "",
+        description: "",
+        original: false,
+        originalLink: "",
+        tags: ""
+      },
+      tags: [], //所有的标签
+      selectedTags: [], //所有已选的标签
+      tagsNum: 5, //可选标签总数
+      elCasercaderProps: {
+        // 多选
+        multiple: true
       }
     };
-  }
+  },
+  created: async function() {
+    // 获取标签
+    const { data: res } = await this.$http.get("/tags/");
+    if (!res.success) {
+      this.$message.error(res.message);
+    }
+    this.tags = res.data.tags;
+  },
+  methods: {
+    change(val) {
+      this.news.content = val;
+    },
+    // 保存为草稿
+    async btnSave() {
+      //判断是否登录
+      const token = window.sessionStorage.getItem("token");
+      if (!token) return this.$message.Error("登录信息已过期,请重新登录");
+      this.news.userId=token;
+      this.news.tags = JSON.stringify(this.ids);
+      const { data: res } = await this.$http.post("/tabNews/save", this.news);
+      if (!res.success) {
+        return this.$message.error(res.message);
+      }
+      this.$message.success(res.message);
+    },
+    // 发布
+    btnPost() {
+      this.dialogVisible = true;
+    },
+    // 点击标签，添加tag
+    addTag(id, name) {
+      // 判断标签数是否超出限制
+      if (this.tagsNum == 0) {
+        this.$message.error("标签数量超过限制");
+      } else {
+        //判断标签是否重复
+        for (var i = 0; i < this.selectedTags.length; i++) {
+          this.ids.push(this.selectedTags[i].id);
+        }
+        const index = this.ids.indexOf(id);
+        if (index == -1) {
+          //没有重复
+          //添加元素到数组中
+          this.selectedTags.push({ id: id, name: name });
+          this.tagsNum -= 1;
+        } else {
+          //重复
+          this.$message.error("重复添加标签");
+        }
+      }
+    },
+    //删除标签
+    remove(index) {
+      this.selectedTags.splice(index, 1); //去除数组中的元素
+      // +1
+      this.tagsNum += 1;
+    }
+  },
+  components: { EditorBar }
 };
 </script>
 <style lang="less" scoped>
@@ -75,5 +206,25 @@ export default {
 }
 .carouse_img {
   height: 200px;
+}
+
+.toolbar {
+  border: 1px solid #ccc;
+}
+.text {
+  border: 1px solid #ccc;
+  min-height: 400px;
+}
+.right {
+  position: fixed;
+  right: 10%;
+  width: 20%;
+}
+
+.btn-add-tags {
+  cursor: pointer;
+}
+.btn-tag {
+  margin: 5px 0;
 }
 </style>
