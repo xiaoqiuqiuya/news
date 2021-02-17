@@ -8,89 +8,65 @@
         <!-- 新闻列表 -->
         <el-card class="news_list">
           <!--新闻轮播-->
-          <el-carousel :interval="4000" height="200px"
-          indicator-position="outside">
+          <el-carousel
+            :interval="4000"
+            height="200px"
+            indicator-position="outside"
+          >
             <el-carousel-item v-for="item in hotNews" :key="item.uniquekey">
               <div class="news_item">
                 <!-- 标题 -->
                 <div class="news_top">
-                  <h2>{{item.title}}</h2>
+                  <h2>{{ item.title }}</h2>
                 </div>
                 <!-- 内容 -->
                 <div class="news_content">
-                  <p>为有效提高幼儿园保育工作质量，促进保育员队伍建设，12月23日下午，城关幼儿园举行了“展技能 亮风采 促规范 ”为题的保育员技能大比拼活动，全园15名保育员参加此次比赛。</p>
+                  <p>
+                    为有效提高幼儿园保育工作质量，促进保育员队伍建设，12月23日下午，城关幼儿园举行了“展技能
+                    亮风采 促规范
+                    ”为题的保育员技能大比拼活动，全园15名保育员参加此次比赛。
+                  </p>
                 </div>
                 <!-- 相关信息 -->
-                <div class="news_info">{{item.date}}</div>
+                <div class="news_info">{{ item.date }}</div>
                 <el-divider></el-divider>
               </div>
             </el-carousel-item>
           </el-carousel>
-
           <!-- 一条新闻 -->
-          <div class="news_item">
+          <div class="news_item" v-for="item in newsList" :key="item.id">
             <!-- 标题 -->
             <div class="news_top">
-              <h2>城关幼儿园开展保育员技能比赛</h2>
+              <h1
+                v-html="item.title"
+                @click="getNew(item.id)"
+                class="news_title"
+              ></h1>
             </div>
             <!-- 内容 -->
             <div class="news_content">
-              <p>为有效提高幼儿园保育工作质量，促进保育员队伍建设，12月23日下午，城关幼儿园举行了“展技能 亮风采 促规范 ”为题的保育员技能大比拼活动，全园15名保育员参加此次比赛。</p>
+              <!-- <p v-html="item.content"></p> -->
             </div>
             <!-- 相关信息 -->
-            <div class="news_info">腾讯教育|2020-12-28 16:07:27</div>
-            <el-divider></el-divider>
-          </div>
-          <div class="news_item">
-            <!-- 标题 -->
-            <div class="news_top">
-              <h2>城关幼儿园开展保育员技能比赛</h2>
+            <div class="news_info">
+              <!-- 作者名字 -->
+              <span v-html="item.authorName" class="info_authorname"></span>
+              |
+              <!-- 发布时间 -->
+              <span v-html="item.createTime" class="info_time"></span>
+              <span>--{{ item.likeNum }}点赞 --{{ item.viewNum }}浏览</span>
+
+              <!-- 标签 -->
+              <p style="text-align: right">
+                <el-button
+                  size="mini"
+                  v-for="tags in item.tagsList"
+                  :key="tags.id"
+                  >{{ tags.name }}</el-button
+                >
+              </p>
             </div>
-            <!-- 内容 -->
-            <div class="news_content">
-              <p>为有效提高幼儿园保育工作质量，促进保育员队伍建设，12月23日下午，城关幼儿园举行了“展技能 亮风采 促规范 ”为题的保育员技能大比拼活动，全园15名保育员参加此次比赛。</p>
-            </div>
-            <!-- 相关信息 -->
-            <div class="news_info">腾讯教育|2020-12-28 16:07:27</div>
-            <el-divider></el-divider>
-          </div>
-          <div class="news_item">
-            <!-- 标题 -->
-            <div class="news_top">
-              <h2>城关幼儿园开展保育员技能比赛</h2>
-            </div>
-            <!-- 内容 -->
-            <div class="news_content">
-              <p>为有效提高幼儿园保育工作质量，促进保育员队伍建设，12月23日下午，城关幼儿园举行了“展技能 亮风采 促规范 ”为题的保育员技能大比拼活动，全园15名保育员参加此次比赛。</p>
-            </div>
-            <!-- 相关信息 -->
-            <div class="news_info">腾讯教育|2020-12-28 16:07:27</div>
-            <el-divider></el-divider>
-          </div>
-          <div class="news_item">
-            <!-- 标题 -->
-            <div class="news_top">
-              <h2>城关幼儿园开展保育员技能比赛</h2>
-            </div>
-            <!-- 内容 -->
-            <div class="news_content">
-              <p>为有效提高幼儿园保育工作质量，促进保育员队伍建设，12月23日下午，城关幼儿园举行了“展技能 亮风采 促规范 ”为题的保育员技能大比拼活动，全园15名保育员参加此次比赛。</p>
-            </div>
-            <!-- 相关信息 -->
-            <div class="news_info">腾讯教育|2020-12-28 16:07:27</div>
-            <el-divider></el-divider>
-          </div>
-          <div class="news_item">
-            <!-- 标题 -->
-            <div class="news_top">
-              <h2>城关幼儿园开展保育员技能比赛</h2>
-            </div>
-            <!-- 内容 -->
-            <div class="news_content">
-              <p>为有效提高幼儿园保育工作质量，促进保育员队伍建设，12月23日下午，城关幼儿园举行了“展技能 亮风采 促规范 ”为题的保育员技能大比拼活动，全园15名保育员参加此次比赛。</p>
-            </div>
-            <!-- 相关信息 -->
-            <div class="news_info">腾讯教育|2020-12-28 16:07:27</div>
+            <!-- 底部分割线 -->
             <el-divider></el-divider>
           </div>
         </el-card>
@@ -114,6 +90,17 @@
 </template>
 <script>
 export default {
+  created: async function () {
+    // 请求新闻列表
+    const { data: res } = await this.$http.get(
+      "/tabNews/getList/" + this.current + "/" + this.size
+    );
+    if (!res.success) {
+      return this.$message.error(res.message);
+    }
+    console.log(res);
+    this.newsList = res.data.newsList;
+  },
   data() {
     return {
       hotNews: [
@@ -125,7 +112,7 @@ export default {
           author_name: "央视新闻客户端",
           url: "https://mini.eastday.com/mobile/210204130301238107821.html",
           thumbnail_pic_s:
-            "https://dfzximg02.dftoutiao.com/news/20210204/20210204130301_a708fad3bc5cb98e2f7013a803910d15_0_mwpm_03201609.jpeg"
+            "https://dfzximg02.dftoutiao.com/news/20210204/20210204130301_a708fad3bc5cb98e2f7013a803910d15_0_mwpm_03201609.jpeg",
         },
         {
           uniquekey: "ae0865aab7de1bc573b80aea47e44c3f",
@@ -139,7 +126,7 @@ export default {
           thumbnail_pic_s02:
             "https://dfzximg02.dftoutiao.com/news/20210204/20210204125707_e0a3bcfeb85d4e19c1237ae0d6eb84d2_1_mwpm_03201609.jpeg",
           thumbnail_pic_s03:
-            "https://dfzximg02.dftoutiao.com/news/20210204/20210204125707_e0a3bcfeb85d4e19c1237ae0d6eb84d2_2_mwpm_03201609.jpeg"
+            "https://dfzximg02.dftoutiao.com/news/20210204/20210204125707_e0a3bcfeb85d4e19c1237ae0d6eb84d2_2_mwpm_03201609.jpeg",
         },
         {
           uniquekey: "2e838ccdf9be393df58a447658ced5f1",
@@ -154,11 +141,19 @@ export default {
           thumbnail_pic_s02:
             "https://dfzximg02.dftoutiao.com/news/20210204/20210204125656_7f52d892ab4684f259cbd1de398097c8_1_mwpm_03201609.jpeg",
           thumbnail_pic_s03:
-            "https://dfzximg02.dftoutiao.com/news/20210204/20210204125656_7f52d892ab4684f259cbd1de398097c8_2_mwpm_03201609.jpeg"
-        }
-      ]
+            "https://dfzximg02.dftoutiao.com/news/20210204/20210204125656_7f52d892ab4684f259cbd1de398097c8_2_mwpm_03201609.jpeg",
+        },
+      ],
+      current: 1, //当前页
+      size: 5, //默认每页显示数
+      newsList: [], //新闻列表
     };
-  }
+  },
+  methods: {
+    getNew(id){
+      this.$router.push("/newsItem?id="+id);
+    },
+  },
 };
 </script>
 <style lang="less" scoped>
@@ -193,5 +188,22 @@ export default {
 }
 .carouse_img {
   height: 200px;
+}
+.info_authorname {
+  cursor: pointer;
+  margin-right: 10px;
+}
+.info_authorname:hover {
+  color: #00965e;
+}
+.info_time {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.news_title {
+  cursor: pointer;
+}
+.news_title:hover {
+  color: #00965e;
 }
 </style>

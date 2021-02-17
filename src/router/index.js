@@ -1,9 +1,11 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '../views/login'
-import home from "../views/home"
+import home from "../views/Home"
 import index from "../components/index"
 import publish from "../views/publish"
+import newsItem from "../components/newsItem/newsItem"
+
 
 Vue.use(VueRouter)
 
@@ -25,6 +27,9 @@ const routes = [{
     },{
       path:"/publish",
       component:publish
+    },{
+      path:"/newsItem",
+      component:newsItem
     }]
   }
 ]
