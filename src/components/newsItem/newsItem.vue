@@ -5,7 +5,7 @@
     <el-row :gutter="20">
       <!-- 偏移2格 -->
       <el-col :offset="2" :span="22">
-        <!-- 主题内容 -->
+        <!-- 主体内容 -->
         <el-card class="news_list">
           <!-- 作者信息 -->
           <span v-html="news.authorName"></span>

@@ -16,11 +16,16 @@
           <el-menu-item index="2-2">月榜</el-menu-item>
           <el-menu-item index="2-3">年度大事件</el-menu-item>
         </el-submenu>
-        <el-menu-item index="3">通知</el-menu-item>
+        <el-menu-item index="3">
+           <a href="/messageBoard">留言板</a>
+          </el-menu-item>
         <el-menu-item index="4">
           <a href="/publish">发布</a>
           </el-menu-item>
-        <el-menu-item index="5">
+          <el-menu-item>
+            <a href="/timeLine">进度条</a>
+          </el-menu-item>
+        <el-menu-item index="6">
           <el-button type="info" @click="logout">退出</el-button>
         </el-menu-item>
       </el-menu>

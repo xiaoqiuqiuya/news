@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import './plugins/element.js'
 import axios from "axios"
+import moment from 'moment'
 
 // 引入全局样式
 import "../src/assets/css/global.css"
@@ -16,7 +17,8 @@ axios.interceptors.request.use(config => {
 })
 
 Vue.prototype.$http = axios
-
+//时间格式
+Vue.prototype.$moment = moment
 Vue.config.productionTip = false
 
 new Vue({

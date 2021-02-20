@@ -53,7 +53,10 @@
               <span v-html="item.authorName" class="info_authorname"></span>
               |
               <!-- 发布时间 -->
-              <span v-html="item.createTime" class="info_time"></span>
+              <span class="info_time">{{
+                $moment(item.gmtCreate).format("YYYY-MM-DD")
+              }}
+              </span>
               <span>--{{ item.likeNum }}点赞 --{{ item.viewNum }}浏览</span>
 
               <!-- 标签 -->
@@ -62,6 +65,7 @@
                   size="mini"
                   v-for="tags in item.tagsList"
                   :key="tags.id"
+                  @click="getNewsList(tags.id)"
                   >{{ tags.name }}</el-button
                 >
               </p>
@@ -69,6 +73,13 @@
             <!-- 底部分割线 -->
             <el-divider></el-divider>
           </div>
+          <el-pagination
+            :page-size="size"
+            layout="prev, pager, next"
+            :total="total"
+            @current-change="handleChange"
+          >
+          </el-pagination>
         </el-card>
       </el-col>
       <!-- 右边 -->
@@ -91,15 +102,8 @@
 <script>
 export default {
   created: async function () {
-    // 请求新闻列表
-    const { data: res } = await this.$http.get(
-      "/tabNews/getList/" + this.current + "/" + this.size
-    );
-    if (!res.success) {
-      return this.$message.error(res.message);
-    }
-    console.log(res);
-    this.newsList = res.data.newsList;
+    // 获取总数
+    this.getNewsList(0);
   },
   data() {
     return {
@@ -147,11 +151,35 @@ export default {
       current: 1, //当前页
       size: 5, //默认每页显示数
       newsList: [], //新闻列表
+      total: 0,
+      selectTag: 0,
     };
   },
   methods: {
-    getNew(id){
-      this.$router.push("/newsItem?id="+id);
+    getNew(id) {
+      this.$router.push("/newsItem?id=" + id);
+    },
+    async handleChange(current) {
+      this.current = current;
+      this.getNewsList(this.selectTag);
+    },
+    // 请求新闻列表
+    async getNewsList(tagID) {
+      this.selectTag = tagID;
+      const { data: res } = await this.$http.get(
+        "/tabNews/getList/" +
+          this.current +
+          "/" +
+          this.size +
+          "/" +
+          this.selectTag
+      );
+      if (!res.success) {
+        return this.$message.error(res.message);
+      }
+      console.log(res);
+      this.newsList = res.data.newsList;
+      this.total = res.data.total;
     },
   },
 };
