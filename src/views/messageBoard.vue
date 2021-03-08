@@ -57,11 +57,40 @@
               placeholder="在此留下你你的脚步吧~"
               v-model="content"
               class="my-input"
-               maxlength="100"
-                show-word-limit
+              maxlength="100"
+              show-word-limit
             >
-              <el-button slot="append" icon="el-icon-s-promotion" @click="postBoard"></el-button>
+              <el-button
+                slot="append"
+                icon="el-icon-s-promotion"
+                @click="postBoard"
+              ></el-button>
             </el-input>
+          </div>
+          <div>
+            <div
+              v-infinite-scroll="load"
+              style="overflow: auto"
+              infinite-scroll-delay="2000"
+              infinite-scroll-disabled="disabled"
+            >
+              <div v-for="board in messageList" :key="board.id">
+                <div>
+                  <span class="userName">{{ board.userName }}</span>
+                  <span class="gmtTime">{{
+                    $moment(board.gmtCreate).format("YYYY-MM-DD")
+                  }}</span>
+                  <span class="floor">第{{ board.id }}楼</span>
+                </div>
+                <div class="content">{{ board.content }}</div>
+                <el-divider></el-divider>
+              </div>
+              <div class="tips">
+                    <p v-if="loading">加载中...</p>
+              <p v-if="noMore">没有更多了</p>
+              </div>
+          
+            </div>
           </div>
         </el-card>
       </el-col>
@@ -71,7 +100,7 @@
 
 <script>
 export default {
-  created: function () {
+  created: async function () {
     const token = window.sessionStorage.getItem("token");
     if (!token) {
       // 没有登陆
@@ -81,33 +110,67 @@ export default {
       this.userId = token;
     }
     // 获取留言
+    this.getMessageBoard();
+    // 获取总数
+    const { data: res } = await this.$http.get("/board/getTotal");
+    this.count = res.data.count;
   },
   data() {
     return {
       messageList: [],
       userId: 0,
       content: "", // 留言内容
+      current: 1,
+      size: 5,
+      count: 0,
+      currentCount: 0,
+      loading: false,
     };
+  },
+  computed: {
+    noMore() {
+      return this.currentCount >= this.count;
+    },
+    disabled() {
+      return this.loading || this.noMore;
+    },
   },
   methods: {
     // 获取留言
-    getMessageBoard(){
-      
+    async getMessageBoard() {
+      const { data: res } = await this.$http.get(
+        "/board/getBoard/" + this.current + "/" + this.size
+      );
+      res.data.boards.forEach((element) => {
+        this.messageList.push(element);
+      });
+
+      console.log(res);
     },
 
     //发布留言
     async postBoard() {
-      const { data: res } = await this.$http.post(
-        "/board/postBoard" ,{ content: this.content, userId: this.userId }
-      );
+      const { data: res } = await this.$http.post("/board/postBoard", {
+        content: this.content,
+        userId: this.userId,
+      });
       if (!res.success) {
         return this.$message.error(res.message);
       }
- this.$message.success(res.message);
+      this.$message.success(res.message);
       // 刷新留言板
       this.getMessageBoard();
     },
-    
+    // 下拉加载
+    load() {
+      this.loading = true;
+      setTimeout(() => {
+        this.currentCount = this.currentCount + this.size;
+        this.loading = false;
+      }, 2000);
+      this.current = this.current + 1;
+      this.getMessageBoard();
+    },
   },
 };
 </script>
@@ -122,5 +185,24 @@ export default {
 }
 .my-input {
   width: 50%;
+}
+.userName {
+  font-weight: bold;
+}
+.gmtTime {
+  margin-left: 5px;
+  font-size: 0.9rem;
+}
+.floor {
+  margin-right: 10px;
+  float: right;
+}
+.content {
+  text-indent: 2rem;
+  font-size: 0.9rem;
+}
+.tips{
+  font-size: 0.9rem;
+  text-align: center;
 }
 </style>

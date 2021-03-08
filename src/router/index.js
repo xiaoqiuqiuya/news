@@ -7,6 +7,9 @@ import publish from "../views/publish"
 import newsItem from "../components/newsItem/newsItem"
 import timeLine from "../views/timeLine"
 import messageBoard from "../views/messageBoard"
+import user from "../views/user"
+import history from "../views/history"
+import favorite from "../views/favorite"
 
 Vue.use(VueRouter)
 
@@ -34,10 +37,20 @@ const routes = [{
   }, {
     path: "/timeLine",
     component: timeLine
+  }, {
+    path: "/messageBoard",
+    component: messageBoard
+  }, {
+    path: "/user",
+    component:user
+  }, {
+    path: "/history",
+    component: history
   },{
-    path:"/messageBoard",
-    component:messageBoard
-  }]
+    path:"/favorite",
+    component:favorite
+  }
+  ]
 }
 ]
 

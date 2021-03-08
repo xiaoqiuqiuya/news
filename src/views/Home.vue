@@ -26,6 +26,9 @@
             <a href="/timeLine">进度条</a>
           </el-menu-item>
         <el-menu-item index="6">
+          <a href="/user">个人中心</a>
+        </el-menu-item>
+        <el-menu-item index="7">
           <el-button type="info" @click="logout">退出</el-button>
         </el-menu-item>
       </el-menu>

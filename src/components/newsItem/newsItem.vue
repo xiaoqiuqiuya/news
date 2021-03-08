@@ -22,6 +22,39 @@
           </span>
           <!-- 内容 -->
           <p v-html="news.content"></p>
+
+          <!-- 收藏 -->
+          <p class="fav">
+            <span @click="getFav(), (favBoxVisible = true)">
+              <i class="el-icon-folder-add"></i>
+              添加到收藏夹</span
+            >
+          </p>
+          <el-dialog
+            title="添加到收藏夹"
+            :visible.sync="favBoxVisible"
+            width="30%"
+            center
+          >
+            <el-checkbox-group v-model="checkList">
+              <p v-for="item in favDirs" :key="item.id">
+                <el-checkbox :label="item.id">{{
+                  item.name
+                }}</el-checkbox>
+              </p>
+            </el-checkbox-group>
+
+            <span slot="footer" class="dialog-footer">
+              <p>
+                <el-input v-model="favName" placeholder="新建收藏夹...">
+                  <el-button @click="newFav" slot="append">新建</el-button>
+                </el-input>
+              </p>
+              <el-button @click="favBoxVisible = false">取 消</el-button>
+              <el-button type="primary" @click="addFav">确 定</el-button>
+            </span>
+          </el-dialog>
+
           <!-- 分界线 -->
           <el-divider></el-divider>
           <div class="like_box">
@@ -40,19 +73,21 @@
             </el-button>
           </div>
           <!-- 评论输入框 -->
-          <el-input
-            placeholder="请输入内容"
-            v-model="c_content"
-            class="comment_input"
-            maxlength="50"
-            show-word-limit
-          >
-            <el-button
-              slot="append"
-              icon="el-icon-position"
-              @click="postComment"
-            ></el-button>
-          </el-input>
+          <div class="temp">
+            <el-input
+              placeholder="请输入内容"
+              v-model="c_content"
+              class="comment_input"
+              maxlength="50"
+              show-word-limit
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-position"
+                @click="postComment"
+              ></el-button>
+            </el-input>
+          </div>
           <!-- 评论信息 -->
           <div
             class="comment_box"
@@ -135,8 +170,10 @@
 export default {
   created: async function () {
     //获取用户的id
-    const userId = window.sessionStorage.getItem("token");
-    this.userId = userId;
+    const token = window.sessionStorage.getItem("token");
+    if (token != null) {
+      this.userId = token;
+    }
 
     // 获取地址栏中文章id
     const id = this.$route.query.id;
@@ -152,7 +189,10 @@ export default {
 
     // 获取文章的点赞状态
     const { data: likeStatus } = await this.$http.get(
-      "/tabNewsThumbs/getStatus?newsId=" + this.newsId + "&userId=" + userId
+      "/tabNewsThumbs/getStatus?newsId=" +
+        this.newsId +
+        "&userId=" +
+        this.userId
     );
     this.islike = likeStatus.data.status;
     // 增加浏览量
@@ -172,6 +212,10 @@ export default {
       userId: 0,
       activeCommentInput: 0, //激活的评论输入框
       replyContent: "", //回复的内容
+      favDirs: [], //收藏夹
+      favBoxVisible: false, //添加收藏夹盒子
+      favName: "", // 新建收藏夹名字
+      checkList: [],// 选择的收藏夹
     };
   },
   methods: {
@@ -183,16 +227,16 @@ export default {
       );
       if (!cres.success) return this.$message.error(cres.message);
       this.commentList = cres.data.commentList;
-      console.log(cres);
     },
     // 发布评论
     async postComment() {
-      const token = window.sessionStorage.getItem("token");
-      if (!token) return this.$message.error("登陆信息已过期，请重新登录");
+      if (this.userId == 0) {
+        return this.$message.error("登陆信息已过期，请重新登录");
+      }
       // 构造评论对象
       const tabComment = {
         newsId: this.newsId,
-        userId: token,
+        userId: this.userId,
         content: this.c_content,
       };
       const { data: res } = await this.$http.post(
@@ -205,10 +249,14 @@ export default {
     },
     // 点赞评论
     async likeComment(commnetId, index) {
-      const token = window.sessionStorage.getItem("token");
-      if (!token) this.$message.error("登录信息已过期，请重新登录");
+      if (this.userId == 0) {
+        this.$message.error("登录信息已过期，请重新登录");
+      }
       const { data: res } = await this.$http.post(
-        "/tabComment/likeComment?commentId=" + commnetId + "&userId=" + token
+        "/tabComment/likeComment?commentId=" +
+          commnetId +
+          "&userId=" +
+          this.userId
       );
       if (!res.success) return this.$message.error(res.message);
       // 更新点赞状态
@@ -250,8 +298,10 @@ export default {
     // 发表回复
     async postReply(commentId) {
       // 判断登录状态
-      const token = window.sessionStorage.getItem("token");
-      if (!token) return this.$message.error("登陆信息已过期，请重新登录");
+
+      if (this.userId == 0) {
+        return this.$message.error("登陆信息已过期，请重新登录");
+      }
       // 发布网络请求
       const { data: res } = await this.$http.post("/tabReply/postReply", {
         userId: this.userId,
@@ -267,12 +317,64 @@ export default {
       if (this.userId == 0) {
         return this.$message.error("登录信息已过期，请重新登陆");
       }
-      const { data: res } = await this.$http.post("/tabReplyThumbs/likeReply?userId="+this.userId+"&replyId="+replyId);
+      const { data: res } = await this.$http.post(
+        "/tabReplyThumbs/likeReply?userId=" +
+          this.userId +
+          "&replyId=" +
+          replyId
+      );
       if (!res.success) {
         return this.$message.error(res.message);
       }
       // 刷新评论区
-     this.getComment(this.newsId);
+      this.getComment(this.newsId);
+    },
+    // 添加到收藏夹
+    async addFav() {
+      // 判断登录状态
+      if (this.userId == 0) {
+        this.$message.error("登录信息已过期，请重新登陆再试");
+      }
+      // 发送网络请求
+      const { data: res } = await this.$http.post("/favouriteNews/addFav", {
+        checkList: this.checkList,
+        newsId: this.newsId,
+        userId: this.userId,
+      },{emulateJSON:true});
+
+      if (!res.success) {
+        return this.$message.error(res.message);
+      }
+
+  
+      this.favBoxVisible = false;
+    },
+    // 获取收藏夹
+    async getFav() {
+      const { data: res } = await this.$http.get(
+        "/favDir/getfavdir?userId=" + this.userId+"&newsId="+this.newsId
+      );
+      if (!res.success) {
+        this.$message.error(res.message);
+      }
+     console.log(res);
+      // 把请求的结果赋值给列表
+      this.favDirs = res.data.favDirs;
+      this.checkList = res.data.checkList;
+
+    },
+    // 新建收藏夹
+    async newFav() {
+      // 构造对象
+      const { data: res } = await this.$http.post("/favDir/newfavdir", {
+        userId: this.userId,
+        name: this.favName,
+      });
+      if (!res.success) {
+        this.$message.error(res.message);
+      }
+      //刷新收藏夹
+      this.getFav();
     },
   },
 };
@@ -311,6 +413,9 @@ export default {
 .tags:hover {
   background: #cceadf;
   color: #00965e;
+}
+.temp {
+  width: 100%;
 }
 .comment_input {
   width: 80%;
@@ -393,5 +498,26 @@ export default {
       color: #01aaed;
     }
   }
+}
+
+.fav {
+  text-align: center;
+  cursor: pointer;
+  > i {
+    margin-right: 5px;
+  }
+}
+.fav:hover {
+  color: #00965e;
+}
+.new_fav {
+  text-align: center;
+  cursor: pointer;
+  > i {
+    margin-right: 5px;
+  }
+}
+.new_fav {
+  color: #00965e;
 }
 </style>

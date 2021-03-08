@@ -135,11 +135,18 @@
             </el-collapse-item>
 
             <el-collapse-item
-              :title="timeLine.date"
               :name="timeLine.date"
               v-for="timeLine in timeLineList"
               :key="timeLine.date"
             >
+              <div slot="title">
+                <el-badge v-if="timeLine.issuesNum!=0" :value="timeLine.issuesNum" class="item">
+                  <span>{{timeLine.date}}</span>
+                </el-badge>
+                <el-badge v-else class="item">
+                  <span>{{timeLine.date}}</span>
+                </el-badge>
+              </div>
               <el-card
                 :body-style="{ padding: '5px' }"
                 class="box-card my_card_web"

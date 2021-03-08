@@ -32,7 +32,9 @@
             <el-button type="success" plain @click="btnOption('save')"
               >保存为草稿</el-button
             >
-            <el-button type="warning" plain @click="btnOption('post')">发布</el-button>
+            <el-button type="warning" plain @click="btnOption('post')"
+              >发布</el-button
+            >
           </div>
           <!-- 推荐列表 -->
           <div class="hot_list">
@@ -132,6 +134,11 @@ export default {
     };
   },
   created: async function () {
+     const token = window.sessionStorage.getItem("token");
+      if (token == null) {
+        return this.$message({message:"登录信息已过期,请重新登录", showClose: true,duration:0,type:'error'});
+      }
+      
     // 获取标签
     const { data: res } = await this.$http.get("/tags/");
     if (!res.success) {
@@ -149,7 +156,9 @@ export default {
     async btnSave() {
       //判断是否登录
       const token = window.sessionStorage.getItem("token");
-      if (!token) return this.$message.Error("登录信息已过期,请重新登录");
+      if (token == null) {
+        return this.$message.Error("登录信息已过期,请重新登录");
+      }
       this.news.userId = token;
       this.news.tags = JSON.stringify(this.ids);
       const { data: res } = await this.$http.post("/tabNews/save", this.news);
@@ -158,20 +167,28 @@ export default {
       }
       this.$message.success(res.message);
     },
-    // 点击发布按钮
-    btnPost() {},
+
     // 点击保存或者发布按钮
     async btnOption(option) {
       //判断是否登录
       const token = window.sessionStorage.getItem("token");
-      if (!token) return this.$message.Error("登录信息已过期,请重新登录");
+      if (token == null) {
+        return this.$message.Error("登录信息已过期,请重新登录");
+      }
       this.news.userId = token;
       this.news.tags = JSON.stringify(this.ids);
-      const { data: res } = await this.$http.post("/tabNews/"+option, this.news);
+      const { data: res } = await this.$http.post(
+        "/tabNews/" + option,
+        this.news
+      );
       if (!res.success) {
+         
         return this.$message.error(res.message);
       }
       this.$message.success(res.message);
+      // 跳转到文章详情页
+     this.$router.push("/home");
+
     },
 
     // 点击标签，添加tag
