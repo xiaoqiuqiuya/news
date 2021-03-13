@@ -90,6 +90,7 @@
             v-for="item in recommendList"
             :key="item.id"
             class="recomentList-item"
+             v-loading="loading"
             @click="getNew(item.id)"
           >
             {{ item.title }}
@@ -116,6 +117,7 @@ export default {
       total: 0, // 总数
       selectTag: 0, // 选择的标签
       topList: [], // 置顶推荐
+      loading:true,
     };
   },
   methods: {
@@ -150,6 +152,7 @@ export default {
     async getRecommend() {
       const { data: res } = await this.$http.get("/tabNews/reco");
       this.recommendList = res.data.recommendList;
+      this.loading =false;
     },
     // 获取置顶推荐
     async getTopList() {

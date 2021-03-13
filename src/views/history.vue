@@ -1,12 +1,5 @@
 <template>
-  <!-- 首页 -->
-  <div class="container">
-    <!-- 间距20px -->
-    <el-row :gutter="20">
-      <!-- 偏移2格 -->
-      <el-col :offset="2" :span="22">
-        <!-- 主体内容 -->
-        <el-card>
+ <el-card>
           <div class="top">
             <div class="top_left">
               <i class="el-icon-alarm-clock icon_history"></i>
@@ -25,7 +18,7 @@
           <!-- 分割线 -->
           <el-divider v-if="total === 0">暂时没有记录</el-divider>
           <el-divider v-else></el-divider>
-          <div class="content">
+          <div class="content"  v-loading="historyLoading">
             <el-timeline>
               <el-timeline-item
                 v-for="item in newsList"
@@ -71,9 +64,6 @@
             </el-pagination>
           </div>
         </el-card>
-      </el-col>
-    </el-row>
-  </div>
 </template>
 
 <script>
@@ -86,6 +76,7 @@ export default {
       size: 10,
       total: 0,
       userID: 0,
+      historyLoading:true,
     };
   },
   created: async function () {
@@ -147,6 +138,7 @@ export default {
         return this.$message.error("查询失败，请稍后再试");
       }
       this.newsList = res.data.newsList;
+      this.historyLoading=false;
     },
     // 确认删除历史记录
     async doDel(newsId) {
@@ -207,18 +199,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.container {
-  width: 80%;
-  height: 100%;
-  padding: 0 10%;
-}
-.el-row {
-  width: 100%;
-  height: 100%;
-  .el-col {
-    height: 100%;
-  }
-}
+
 .top {
   width: 100%;
   height: 50px;

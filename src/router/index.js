@@ -10,6 +10,8 @@ import messageBoard from "../views/messageBoard"
 import user from "../views/user"
 import history from "../views/history"
 import favorite from "../views/favorite"
+import trace from "../views/trace"
+import notifications from "../views/notifications"
 
 Vue.use(VueRouter)
 
@@ -42,16 +44,26 @@ const routes = [{
     component: messageBoard
   }, {
     path: "/user",
-    component:user
-  }, {
-    path: "/history",
-    component: history
-  },{
-    path:"/favorite",
-    component:favorite
-  }
+    component: user,
+    redirect: "/user/trace",
+    children: [{
+      path: "trace",
+      component: trace
+    }, {
+      path: "favorite",
+      component: favorite
+    }, {
+      path: "history",
+      component: history
+    },  {
+      path: "notifications",
+      component: notifications
+    }]
+  },
+
   ]
-}
+},
+
 ]
 
 const router = new VueRouter({

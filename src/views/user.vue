@@ -6,91 +6,36 @@
       <!-- 偏移2格 -->
       <el-col :offset="2" :span="16">
         <!-- 主体内容 -->
-        <el-card>
-          <div class="top">
-            <i class="el-icon-bicycle icon_trace"></i>
-            <h1 class="page_name">动态</h1>
-          </div>
-
-          <div class="content">
-            <el-timeline>
-              <el-timeline-item
-                v-for="item in traceList"
-                :key="item.id"
-                :timestamp="$moment(item.gmtCreate).format('YYYY-MM-DD HH:mm')"
-                placement="top"
-              >
-                <el-card>
-                  <div>
-                    <p>
-                      <span class="trace_title">
-                        {{ item.content }}
-                      </span>
-
-                      <i
-                        class="el-icon-delete del_item"
-                        @click="checkDel(item.id)"
-                        >删除</i
-                      >
-                      <span class="author">{{ item.authorName }}</span>
-                    </p>
-                  </div>
-
-                  <!-- 新闻对象 -->
-                  <el-card v-if="item.type <= 3">
-                    <div>
-                      <p>
-                        <span class="news_title" @click="getNew(item.id)">
-                          {{ item.object.title }}
-                        </span>
-
-                        <span class="author">{{ item.object.authorName }}</span>
-                      </p>
-                    </div>
-
-                    <p style="text-align: right">
-                      <span v-for="tags in item.object.tagsList" :key="tags.id"
-                        >{{ tags.name }} /
-                      </span>
-                    </p>
-                  </el-card>
-                  <!-- 评论对象 -->
-                  <el-card v-if="item.type == 4">
-                    <span @click="getNew(item.object.newsId)" class="comment">
-                      {{ item.object.content }}
-                    </span>
-                  </el-card>
-                  <!-- 留言对象 -->
-                  <el-card v-if="item.type == 5" class="board">
-                    {{ item.object.content }}
-                    <span class="floor">第{{ item.object.id }}楼</span>
-                  </el-card>
-                </el-card>
-              </el-timeline-item>
-            </el-timeline>
-          </div>
-          <el-pagination
-            layout="prev, pager, next"
-            :total="total"
-            @current-change="handleCurrentChange"
-          >
-          </el-pagination>
-        </el-card>
+        <router-view></router-view>
       </el-col>
       <el-col :span="6" class="right">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span style="font-weight: bold">{{ userName }},你好</span>
           </div>
-          <ul>
-            <li>我的文章</li>
+          <ul class="my_ul">
+            <li>
+              <i class="el-icon-bell"></i>
+              <a href="/user/notifications">我的通知</a>
+            </li>
+            <li>
+              <i class="el-icon-reading"></i>
+              我的投稿</li>
             <li>我的推荐</li>
             <li>
-              <a href="/favorite">我的收藏</a>
+              <i class="el-icon-collection-tag"></i>
+              <a href="/user/favorite">我的收藏</a>
             </li>
             <li>
-              <a href="/history"> 浏览记录</a>
+              <a href="/user/history"> 浏览记录</a>
             </li>
+          </ul>
+          <!-- 分割线 -->
+          <el-divider>账号设置</el-divider>
+
+          <ul class="my_ul">
+            <li><i class="el-icon-s-check"></i>修改个人信息</li>
+            <li><i class="el-icon-setting"></i>账号安全</li>
           </ul>
         </el-card>
       </el-col>
@@ -263,5 +208,8 @@ export default {
 }
 .board {
   cursor: pointer;
+}
+.my_ul {
+  list-style: none;
 }
 </style>

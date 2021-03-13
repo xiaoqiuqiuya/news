@@ -19,6 +19,46 @@
               <!-- 发布时间 -->
             </span>
             发布于{{ news.createTime }}
+            <span class="objection" @click="getObjectionList()"
+              >对此文有异议</span
+            >
+            <!-- 投诉框 -->
+            <el-dialog
+              title="稿件投诉"
+              :visible.sync="centerDialogVisible"
+              width="25%"
+              center
+              class="objection_box"
+              :close-on-click-modal="false"
+            >
+              <p>你觉得这个稿件存在何种问题？</p>
+              <div v-for="objection in objectionList" :key="objection.id">
+                <el-radio v-model="radio" :label="objection.id">{{
+                  objection.name
+                }}</el-radio>
+              </div>
+              <p>为帮助审核人员快速处理，请补充详细信息</p>
+              <el-input
+                type="textarea"
+                placeholder="请补充详细信息"
+                v-model="areaInput"
+                maxlength="400"
+                show-word-limit
+                class="objection_box_textarea"
+                resize="none"
+                rows="4"
+              >
+              </el-input>
+
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="centerDialogVisible = false"
+                  >取 消</el-button
+                >
+                <el-button type="primary" @click="submitObjection"
+                  >确 定</el-button
+                >
+              </span>
+            </el-dialog>
           </span>
           <!-- 内容 -->
           <p v-html="news.content"></p>
@@ -38,9 +78,7 @@
           >
             <el-checkbox-group v-model="checkList">
               <p v-for="item in favDirs" :key="item.id">
-                <el-checkbox :label="item.id">{{
-                  item.name
-                }}</el-checkbox>
+                <el-checkbox :label="item.id">{{ item.name }}</el-checkbox>
               </p>
             </el-checkbox-group>
 
@@ -215,7 +253,11 @@ export default {
       favDirs: [], //收藏夹
       favBoxVisible: false, //添加收藏夹盒子
       favName: "", // 新建收藏夹名字
-      checkList: [],// 选择的收藏夹
+      checkList: [], // 选择的收藏夹
+      centerDialogVisible: false, //控制投诉框的显示与隐藏
+      objectionList: [], // 获取投诉的类型
+      radio: "", // 投诉稿件绑定的类型
+      areaInput: "", //投诉稿件补充信息
     };
   },
   methods: {
@@ -336,32 +378,34 @@ export default {
         this.$message.error("登录信息已过期，请重新登陆再试");
       }
       // 发送网络请求
-      const { data: res } = await this.$http.post("/favouriteNews/addFav", {
-        checkList: this.checkList,
-        newsId: this.newsId,
-        userId: this.userId,
-      },{emulateJSON:true});
+      const { data: res } = await this.$http.post(
+        "/favouriteNews/addFav",
+        {
+          checkList: this.checkList,
+          newsId: this.newsId,
+          userId: this.userId,
+        },
+        { emulateJSON: true }
+      );
 
       if (!res.success) {
         return this.$message.error(res.message);
       }
 
-  
       this.favBoxVisible = false;
     },
     // 获取收藏夹
     async getFav() {
       const { data: res } = await this.$http.get(
-        "/favDir/getfavdir?userId=" + this.userId+"&newsId="+this.newsId
+        "/favDir/getfavdir?userId=" + this.userId + "&newsId=" + this.newsId
       );
       if (!res.success) {
         this.$message.error(res.message);
       }
-     console.log(res);
+      console.log(res);
       // 把请求的结果赋值给列表
       this.favDirs = res.data.favDirs;
       this.checkList = res.data.checkList;
-
     },
     // 新建收藏夹
     async newFav() {
@@ -375,6 +419,41 @@ export default {
       }
       //刷新收藏夹
       this.getFav();
+    },
+
+    // 获取投诉的内容信息
+    async getObjectionList() {
+      // 显示投诉框
+      this.centerDialogVisible = true;
+      if (this.objectionList.length == 0) {
+        const { data: res } = await this.$http.get("/tabObjectionItem/getItem");
+        if (!res.success) {
+          return this.$message.error(res.message);
+        }
+        this.objectionList = res.data.items;
+      }
+    },
+    // 提交投诉内容
+    async submitObjection() {
+      if (this.radio == "" || this.areaInput == "") {
+        return this.$message.error("请选择投诉的类型并补充详细说明");
+      }
+
+      const { data: res } = await this.$http.post(
+        "/tabObjection/postObjection",
+        {
+          userId: this.userId,
+          type: this.radio,
+          newsId: this.newsId,
+          content: this.areaInput,
+        }
+      );
+      if (!res.success) {
+        return this.$message.error(res.message);
+      }
+      this.$message.success(res.message);
+      // 关闭窗口
+      this.centerDialogVisible=false;
     },
   },
 };
@@ -519,5 +598,22 @@ export default {
 }
 .new_fav {
   color: #00965e;
+}
+.objection {
+  cursor: pointer;
+  font-weight: bold;
+  float: right;
+}
+.objection:hover {
+  color: #00965e;
+}
+.objection_box {
+  div {
+    width: 50%;
+    display: inline-block;
+  }
+  .objection_box_textarea {
+    width: 100%;
+  }
 }
 </style>

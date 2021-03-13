@@ -140,11 +140,15 @@
               :key="timeLine.date"
             >
               <div slot="title">
-                <el-badge v-if="timeLine.issuesNum!=0" :value="timeLine.issuesNum" class="item">
-                  <span>{{timeLine.date}}</span>
+                <el-badge
+                  v-if="timeLine.issuesNum != 0"
+                  :value="timeLine.issuesNum"
+                  class="item"
+                >
+                  <span>{{ timeLine.date }}</span>
                 </el-badge>
                 <el-badge v-else class="item">
-                  <span>{{timeLine.date}}</span>
+                  <span>{{ timeLine.date }}</span>
                 </el-badge>
               </div>
               <el-card
@@ -312,9 +316,16 @@ export default {
         return this.$message.error(res.message);
       }
       this.$message.success(res.message);
-
-      // 关闭添加面板,删除第一个元素
-      this.activeNames.shift();
+      // 清空输入框
+      (this.timeLineForm = {
+        webs: [{ value: "", key: 1 }],
+        services: [{ value: "", key: 2 }],
+        mysqls: [{ value: "", key: 3 }],
+        issues: [{ value: "", key: 4 }],
+      }),
+        (this.timeLineList = []),
+        // 关闭添加面板,删除第一个元素
+        this.activeNames.shift();
       this.getTimeLineList();
       // 添加元素--打开今日的时间事件面板
       this.activeNames.push(this.currentDate);
