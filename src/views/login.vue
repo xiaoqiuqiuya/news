@@ -97,7 +97,7 @@ export default {
     };
 
     var validateConfirm = (rule, value, callback) => {
-      if (!value) return callback(new Error("请输再次确认您的密码"));
+      if (!value) return callback(new Error("请再次确认您的密码"));
       if (value != this.registFrom.password)
         return callback(new Error("两次输入的密码不一致"));
       callback();

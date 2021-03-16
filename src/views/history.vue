@@ -1,69 +1,63 @@
 <template>
- <el-card>
-          <div class="top">
-            <div class="top_left">
-              <i class="el-icon-alarm-clock icon_history"></i>
-              <h1>历史记录</h1>
+  <el-card>
+    <div class="top">
+      <div class="top_left">
+        <i class="el-icon-alarm-clock icon_history"></i>
+        <h1>历史记录</h1>
+      </div>
+      <div class="top_right">
+        <el-button v-if="total != 0" class="btn_clear" @click="checkDelAll"
+          >清空记录</el-button
+        >
+      </div>
+    </div>
+
+    <!-- 分割线 -->
+    <el-divider v-if="total === 0">暂时没有记录</el-divider>
+    <el-divider v-else></el-divider>
+    <div class="content" v-loading="historyLoading">
+      <el-timeline>
+        <el-timeline-item
+          v-for="item in newsList"
+          :key="item.id"
+          :timestamp="$moment(item.viewTime).format('YYYY-MM-DD HH:mm')"
+          placement="top"
+        >
+          <el-card>
+            <div>
+              <p>
+                <span class="news_title" @click="getNew(item.id)">
+                  {{ item.title }}
+                </span>
+                <i class="el-icon-delete del_item" @click="checkDel(item.id)"
+                  >删除</i
+                >
+                <span class="author">{{ item.authorName }}</span>
+              </p>
             </div>
-            <div class="top_right">
+
+            <p style="text-align: right">
               <el-button
-                v-if="total != 0"
-                class="btn_clear"
-                @click="checkDelAll"
-                >清空记录</el-button
+                size="mini"
+                v-for="tags in item.tagsList"
+                :key="tags.id"
+                >{{ tags.name }}</el-button
               >
-            </div>
-          </div>
+            </p>
+          </el-card>
+        </el-timeline-item>
+      </el-timeline>
 
-          <!-- 分割线 -->
-          <el-divider v-if="total === 0">暂时没有记录</el-divider>
-          <el-divider v-else></el-divider>
-          <div class="content"  v-loading="historyLoading">
-            <el-timeline>
-              <el-timeline-item
-                v-for="item in newsList"
-                :key="item.id"
-                :timestamp="$moment(item.viewTime).format('YYYY-MM-DD HH:mm')"
-                placement="top"
-              >
-                <el-card>
-                  <div>
-                    <p>
-                      <span class="news_title" @click="getNew(item.id)">
-                        {{ item.title }}
-                      </span>
-
-                      <i
-                        class="el-icon-delete del_item"
-                        @click="checkDel(item.id)"
-                        >删除</i
-                      >
-                      <span class="author">{{ item.authorName }}</span>
-                    </p>
-                  </div>
-
-                  <p style="text-align: right">
-                    <el-button
-                      size="mini"
-                      v-for="tags in item.tagsList"
-                      :key="tags.id"
-                      >{{ tags.name }}</el-button
-                    >
-                  </p>
-                </el-card>
-              </el-timeline-item>
-            </el-timeline>
-
-            <!-- 分页 -->
-            <el-pagination
-              :page-size="size"
-              layout="prev, pager, next"
-              :total="total"
-              @current-change="handleChange"
-            >
-            </el-pagination>
-          </div>
-        </el-card>
+      <!-- 分页 -->
+      <el-pagination
+        :page-size="size"
+        layout="prev, pager, next"
+        :total="total"
+        @current-change="handleChange"
+      >
+      </el-pagination>
+    </div>
+  </el-card>
 </template>
 
 <script>
@@ -76,7 +70,7 @@ export default {
       size: 10,
       total: 0,
       userID: 0,
-      historyLoading:true,
+      historyLoading: true,
     };
   },
   created: async function () {
@@ -113,9 +107,9 @@ export default {
         });
     },
     // 处理分页
-   async handleChange(current) {
+    async handleChange(current) {
       this.current = current;
-     
+
       this.getHistory();
     },
     getNew(id) {
@@ -138,7 +132,12 @@ export default {
         return this.$message.error("查询失败，请稍后再试");
       }
       this.newsList = res.data.newsList;
-      this.historyLoading=false;
+      this.newsList.forEach(item =>{
+        if(item.title.length>20){
+          item.title = item.title.substring(0,20)+"...";
+        }
+      });
+      this.historyLoading = false;
     },
     // 确认删除历史记录
     async doDel(newsId) {
@@ -199,7 +198,6 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-
 .top {
   width: 100%;
   height: 50px;

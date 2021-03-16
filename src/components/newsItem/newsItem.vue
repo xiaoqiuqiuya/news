@@ -18,7 +18,7 @@
               >{{ item.name }}
               <!-- 发布时间 -->
             </span>
-            发布于{{ news.createTime }}
+            发布于{{ $moment(news.createTime).format("YYYY-MM-DD HH:ss") }}
             <span class="objection" @click="getObjectionList()"
               >对此文有异议</span
             >
@@ -423,6 +423,10 @@ export default {
 
     // 获取投诉的内容信息
     async getObjectionList() {
+      // 判断登录
+      if (this.userId == 0) {
+        return this.$message.error("为防止滥用举报功能，请登录后操作");
+      }
       // 显示投诉框
       this.centerDialogVisible = true;
       if (this.objectionList.length == 0) {
@@ -453,7 +457,7 @@ export default {
       }
       this.$message.success(res.message);
       // 关闭窗口
-      this.centerDialogVisible=false;
+      this.centerDialogVisible = false;
     },
   },
 };

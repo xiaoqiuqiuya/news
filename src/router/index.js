@@ -12,12 +12,17 @@ import history from "../views/history"
 import favorite from "../views/favorite"
 import trace from "../views/trace"
 import notifications from "../views/notifications"
+import contribute from "../views/contribute"
+import information from "../views/information"
+import safe from "../views/safe"
 
+// 管理系统
+import adminLogin from "../admin/adminLogin"
+import AIndex from "../admin/AIndex"
 Vue.use(VueRouter)
-
 const routes = [{
   path: "/",
-  redirect: "/login"
+  redirect: "/index"
 },
 {
   path: '/login',
@@ -45,7 +50,6 @@ const routes = [{
   }, {
     path: "/user",
     component: user,
-    redirect: "/user/trace",
     children: [{
       path: "trace",
       component: trace
@@ -58,11 +62,29 @@ const routes = [{
     },  {
       path: "notifications",
       component: notifications
+    },{
+      path:"contribute",
+      component:contribute
+    },{
+      path:"information",
+      component:information
+    },{
+      path:"safe",
+      component:safe
     }]
   },
 
   ]
 },
+// 后台管理系统页面
+{
+  path:"/adminLogin",
+  component:adminLogin
+},{
+  path:"/AIndex",
+  component:AIndex
+},
+
 
 ]
 

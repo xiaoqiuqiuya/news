@@ -8,7 +8,11 @@
     <!-- 顶部分割线 -->
     <el-divider></el-divider>
     <el-tabs tab-position="left">
-      <el-tab-pane :label="item.name+'('+item.list.length+')'" v-for="item in favList" :key="item.id">
+      <el-tab-pane
+        :label="item.name + '(' + item.list.length + ')'"
+        v-for="item in favList"
+        :key="item.id"
+      >
         <el-card
           v-for="news in item.list"
           :key="news.id"
@@ -112,6 +116,13 @@ export default {
         this.favList = res.data.favList;
         console.log(this.favList);
         this.favLoading = false;
+        this.favList.forEach((item) => {
+          item.list.forEach((newsItem) => {
+            if (newsItem.title.length > 30) {
+              newsItem.title = newsItem.title.substring(0, 30) + "...";
+            }
+          });
+        });
       }
     },
     // 获取总数
@@ -141,7 +152,7 @@ export default {
         if (!res.success) {
           this.$message.error(res.message);
         }
-        this.$message.success(res.message)
+        this.$message.success(res.message);
         // 刷新页面数据
         this.getFav();
       }

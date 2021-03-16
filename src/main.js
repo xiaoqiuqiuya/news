@@ -8,6 +8,8 @@ import moment from 'moment'
 
 // 引入全局样式
 import "../src/assets/css/global.css"
+import "../src/assets/iconfont/iconfont.css"
+
 // 配置请求的根路径
 axios.defaults.baseURL = "http://localhost:8889/news";
 // 通过axios请求拦截器添加token，保证拥有获取数据的权限

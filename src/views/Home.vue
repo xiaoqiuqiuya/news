@@ -6,30 +6,73 @@
         <img src="../assets/logo.png" alt />
       </div>
       <el-menu mode="horizontal">
-        <el-menu-item index="0"></el-menu-item>
         <el-menu-item index="1">
-          <a href="/index">首页</a>
+          <el-link href="/index" >首页</el-link>
         </el-menu-item>
+
         <el-submenu index="2">
           <template slot="title">新闻热榜</template>
           <el-menu-item index="2-1">周榜</el-menu-item>
           <el-menu-item index="2-2">月榜</el-menu-item>
           <el-menu-item index="2-3">年度大事件</el-menu-item>
         </el-submenu>
+
         <el-menu-item index="3">
-          <a href="/messageBoard">留言板</a>
+          <el-link href="/messageBoard">留言板</el-link>
         </el-menu-item>
         <el-menu-item index="4">
-          <a href="/publish">发布</a>
+          <el-link href="/publish">发布</el-link>
         </el-menu-item>
         <el-menu-item>
-          <a href="/timeLine">进度条</a>
+          <el-link href="/timeLine">进度条</el-link>
         </el-menu-item>
-        <el-menu-item index="6">
-          <a href="/user">个人中心</a>
-        </el-menu-item>
-        <el-menu-item index="7">
-          <el-button type="info" @click="logout">退出</el-button>
+
+        <el-submenu index="6" v-if="userId != 0">
+          <template slot="title"
+            >个人中心
+            <span v-if="uncheckNotice != 0"
+              >({{ uncheckNotice }})</span
+            ></template
+          >
+<el-menu-item index="2-0"
+            ><el-link href="/user/trace"
+              >我的动态
+            </el-link></el-menu-item
+          >
+
+
+          <el-menu-item index="2-0"
+            ><el-link href="/user/notifications"
+              >通知
+              <span v-if="uncheckNotice != 0">({{ uncheckNotice }})</span>
+            </el-link></el-menu-item
+          >
+          
+          <el-menu-item index="2-1"
+            ><el-link href="/user/contribute"
+              >我的投稿
+            </el-link></el-menu-item
+          >
+          <el-menu-item index="2-2">
+            <el-link href="/user/favorite">我的收藏</el-link>
+          </el-menu-item>
+          <el-menu-item index="2-3"
+            ><el-link href="/user/history">历史记录</el-link></el-menu-item
+          >
+
+          <el-menu-item index="2-4"
+            ><el-link href="/user/information">修改个人信息</el-link></el-menu-item
+          >
+
+          <el-menu-item index="2-5"
+            ><el-link href="/user/safe">账号安全</el-link></el-menu-item
+          >
+          <el-menu-item index="2-6"
+            ><el-link @click="logout">退出登录</el-link></el-menu-item
+          >
+        </el-submenu>
+        <el-menu-item v-if="userId==0">
+          <el-link href="/login" target="_blank">登录</el-link>
         </el-menu-item>
       </el-menu>
     </el-header>
@@ -64,10 +107,21 @@
   background-color: #ffffff;
   padding-top: 0;
 }
+.item {
+  margin-top: 10px;
+  margin-right: 40px;
+}
 </style>
 
 <script>
 export default {
+  data() {
+    return {
+      userId: 0,
+      noticeStatus: false, //是否有新的消息
+      uncheckNotice: 0, //未读的消息
+    };
+  },
   created: function () {
     const token = window.sessionStorage.getItem("token");
     if (token != null) {
@@ -75,14 +129,9 @@ export default {
     } else {
       this.userId = 0;
     }
+    this.getUncheckNotice();
   },
-  data() {
-    return {
-      data: {
-        userId: 0,
-      },
-    };
-  },
+
   mounted() {
     // WebSocket
     if ("WebSocket" in window) {
@@ -103,6 +152,18 @@ export default {
       window.sessionStorage.clear();
       this.$router.push("/login");
     },
+    // 获取未读通知条数
+    async getUncheckNotice() {
+      if (this.userId != 0) {
+        const { data: res } = await this.$http.get("/tabNotice/getTotal", {
+          params: { userId: this.userId },
+        });
+        this.uncheckNotice = res.data.uncheckCount;
+        //uncheckCount
+        console.log(res);
+      }
+    },
+    // webSocket初始化连接
     initWebSocket() {
       // 连接错误
       this.websocket.onerror = this.setErrorMessage;
@@ -126,6 +187,7 @@ export default {
     setOnmessageMessage(event) {
       // 根据服务器推送的消息做自己的业务处理
       console.log("服务端返回：" + event.data);
+      this.uncheckNotice = this.uncheckNotice + 1;
     },
     setOncloseMessage() {
       console.log("WebSocket连接关闭    状态码：" + this.websocket.readyState);

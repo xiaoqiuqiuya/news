@@ -58,6 +58,7 @@
               <!-- 标签 -->
               <p style="text-align: right">
                 <el-button
+                  :type="tags.id == selectTag ? 'success' : ''"
                   size="mini"
                   v-for="tags in item.tagsList"
                   :key="tags.id"
@@ -90,7 +91,7 @@
             v-for="item in recommendList"
             :key="item.id"
             class="recomentList-item"
-             v-loading="loading"
+            v-loading="loading"
             @click="getNew(item.id)"
           >
             {{ item.title }}
@@ -117,7 +118,7 @@ export default {
       total: 0, // 总数
       selectTag: 0, // 选择的标签
       topList: [], // 置顶推荐
-      loading:true,
+      loading: true,
     };
   },
   methods: {
@@ -132,8 +133,11 @@ export default {
     },
     // 请求新闻列表
     async getNewsList(tagID) {
-      this.$message.warning({ message: "正在查询请稍后", duration: 800 });
-      this.selectTag = tagID;
+      if(  this.selectTag == tagID){
+        this.selectTag=0;
+      }else{
+        this.selectTag = tagID;
+      }
       const { data: res } = await this.$http.get(
         "/tabNews/getList/" +
           this.current +
@@ -146,13 +150,18 @@ export default {
         return this.$message.error(res.message);
       }
       this.newsList = res.data.newsList;
+      this.newsList.forEach((item) => {
+        if (item.title.length > 40) {
+          item.title = item.title.substring(0, 40) + "...";
+        }
+      });
       this.total = res.data.total;
     },
     // 请求推荐列表
     async getRecommend() {
       const { data: res } = await this.$http.get("/tabNews/reco");
       this.recommendList = res.data.recommendList;
-      this.loading =false;
+      this.loading = false;
     },
     // 获取置顶推荐
     async getTopList() {
@@ -186,9 +195,6 @@ export default {
   }
 }
 
-.carouse_img {
-  height: 200px;
-}
 .info_authorname {
   cursor: pointer;
   margin-right: 10px;
@@ -207,6 +213,10 @@ export default {
   color: #00965e;
 }
 .recomentList-item {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   border-bottom: 1px solid #dcdfe6;
   padding-bottom: 2px;
   cursor: pointer;
@@ -214,5 +224,8 @@ export default {
 .recomentList-item:hover {
   color: #00965e;
   font-weight: bold;
+}
+.selectTag {
+  background-color: red;
 }
 </style>

@@ -51,6 +51,7 @@
               </li>
             </ul>
           </div>
+
           <!-- 输入框 -->
           <div class="input_div">
             <el-input
@@ -68,28 +69,35 @@
             </el-input>
           </div>
           <div>
-            <div
-              v-infinite-scroll="load"
-              style="overflow: auto"
-              infinite-scroll-delay="2000"
-              infinite-scroll-disabled="disabled"
-            >
-              <div v-for="board in messageList" :key="board.id">
-                <div>
-                  <span class="userName">{{ board.userName }}</span>
-                  <span class="gmtTime">{{
-                    $moment(board.gmtCreate).format("YYYY-MM-DD")
-                  }}</span>
-                  <span class="floor">第{{ board.id }}楼</span>
-                </div>
-                <div class="content">{{ board.content }}</div>
-                <el-divider></el-divider>
+            <div v-for="board in messageList" :key="board.id">
+              <div>
+                <span class="userName">{{ board.userName }}</span>
+                <span class="gmtTime">{{
+                  $moment(board.gmtCreate).format("YYYY-MM-DD")
+                }}</span>
+                <span class="floor">第{{ board.id }}楼</span>
               </div>
-              <div class="tips">
-                    <p v-if="loading">加载中...</p>
-              <p v-if="noMore">没有更多了</p>
-              </div>
-          
+              <div class="content">{{ board.content }}</div>
+              <el-divider></el-divider>
+            </div>
+            <div>
+              <!-- 分页 -->
+              <el-pagination
+                :page-size="size"
+                layout="prev, pager, next"
+                :total="count"
+                @current-change="handleChange"
+                class="page"
+              >
+              </el-pagination>
+              <el-switch
+                v-model="orderByDesc"
+                active-text="按时间倒序排序"
+                inactive-text="按时间正序排序"
+                @change="handleSwitchChange"
+                class="sortByDescOrAsc"
+              >
+              </el-switch>
             </div>
           </div>
         </el-card>
@@ -121,10 +129,10 @@ export default {
       userId: 0,
       content: "", // 留言内容
       current: 1,
-      size: 5,
+      size: 10,
       count: 0,
-      currentCount: 0,
       loading: false,
+      orderByDesc: true, // 排序方式
     };
   },
   computed: {
@@ -139,13 +147,14 @@ export default {
     // 获取留言
     async getMessageBoard() {
       const { data: res } = await this.$http.get(
-        "/board/getBoard/" + this.current + "/" + this.size
+        "/board/getBoard/" +
+          this.current +
+          "/" +
+          this.size +
+          "/" +
+          this.orderByDesc
       );
-      res.data.boards.forEach((element) => {
-        this.messageList.push(element);
-      });
-
-      console.log(res);
+      this.messageList = res.data.boards;
     },
 
     //发布留言
@@ -161,14 +170,13 @@ export default {
       // 刷新留言板
       this.getMessageBoard();
     },
-    // 下拉加载
-    load() {
-      this.loading = true;
-      setTimeout(() => {
-        this.currentCount = this.currentCount + this.size;
-        this.loading = false;
-      }, 2000);
-      this.current = this.current + 1;
+    // 处理分页
+    handleChange(current) {
+      this.current = current;
+      this.getMessageBoard();
+    },
+    handleSwitchChange() {
+      //取反
       this.getMessageBoard();
     },
   },
@@ -201,8 +209,14 @@ export default {
   text-indent: 2rem;
   font-size: 0.9rem;
 }
-.tips{
+.tips {
   font-size: 0.9rem;
   text-align: center;
+}
+.sortByDescOrAsc {
+  float: right;
+}
+.page {
+  display: inline-block;
 }
 </style>

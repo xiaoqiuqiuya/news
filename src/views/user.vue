@@ -15,27 +15,48 @@
           </div>
           <ul class="my_ul">
             <li>
-              <i class="el-icon-bell"></i>
-              <a href="/user/notifications">我的通知</a>
+              <el-link href="/user/trace" icon="el-icon-bicycle"
+                >我的动态</el-link
+              >
             </li>
             <li>
-              <i class="el-icon-reading"></i>
-              我的投稿</li>
-            <li>我的推荐</li>
-            <li>
-              <i class="el-icon-collection-tag"></i>
-              <a href="/user/favorite">我的收藏</a>
+              <el-link href="/user/notifications" icon="el-icon-bell"
+                >我的通知</el-link
+              >
             </li>
             <li>
-              <a href="/user/history"> 浏览记录</a>
+              <el-link href="/user/contribute" icon="el-icon-reading"
+                >我的投稿</el-link
+              >
+            </li>
+
+            <li>
+              <el-link href="/user/favorite" icon="el-icon-collection-tag"
+                >我的收藏</el-link
+              >
+            </li>
+            <li>
+              <el-link
+                href="/user/history"
+                icon="el-icon-alarm-clock icon_history"
+                >浏览记录</el-link
+              >
             </li>
           </ul>
           <!-- 分割线 -->
           <el-divider>账号设置</el-divider>
 
           <ul class="my_ul">
-            <li><i class="el-icon-s-check"></i>修改个人信息</li>
-            <li><i class="el-icon-setting"></i>账号安全</li>
+            <li>
+              <el-link href="/user/information" icon="el-icon-s-check"
+                >修改个人信息</el-link
+              >
+            </li>
+            <li>
+              <el-link href="/user/safe" icon="el-icon-setting"
+                >账号安全</el-link
+              >
+            </li>
           </ul>
         </el-card>
       </el-col>
@@ -211,5 +232,8 @@ export default {
 }
 .my_ul {
   list-style: none;
+  .el-link {
+    font-size: 16px;
+  }
 }
 </style>

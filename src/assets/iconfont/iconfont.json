@@ -1,0 +1,16 @@
+{
+  "id": "1822577",
+  "name": "小程序购物",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1703514",
+      "name": "点赞",
+      "font_class": "dianzan",
+      "unicode": "e63b",
+      "unicode_decimal": 58939
+    }
+  ]
+}
