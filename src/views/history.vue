@@ -6,55 +6,49 @@
         <h1>历史记录</h1>
       </div>
       <div class="top_right">
-        <el-button v-if="total != 0" class="btn_clear" @click="checkDelAll"
-          >清空记录</el-button
-        >
+        <el-button v-if="total != 0"
+                   class="btn_clear"
+                   @click="checkDelAll">清空记录</el-button>
       </div>
     </div>
 
     <!-- 分割线 -->
     <el-divider v-if="total === 0">暂时没有记录</el-divider>
     <el-divider v-else></el-divider>
-    <div class="content" v-loading="historyLoading">
+    <div class="content"
+         v-loading="historyLoading">
       <el-timeline>
-        <el-timeline-item
-          v-for="item in newsList"
-          :key="item.id"
-          :timestamp="$moment(item.viewTime).format('YYYY-MM-DD HH:mm')"
-          placement="top"
-        >
+        <el-timeline-item v-for="item in newsList"
+                          :key="item.id"
+                          :timestamp="$moment(item.viewTime).format('YYYY-MM-DD HH:mm')"
+                          placement="top">
           <el-card>
             <div>
               <p>
-                <span class="news_title" @click="getNew(item.id)">
+                <span class="news_title"
+                      @click="getNew(item.id)">
                   {{ item.title }}
                 </span>
-                <i class="el-icon-delete del_item" @click="checkDel(item.id)"
-                  >删除</i
-                >
+                <i class="el-icon-delete del_item"
+                   @click="checkDel(item.id)">删除</i>
                 <span class="author">{{ item.authorName }}</span>
               </p>
             </div>
 
             <p style="text-align: right">
-              <el-button
-                size="mini"
-                v-for="tags in item.tagsList"
-                :key="tags.id"
-                >{{ tags.name }}</el-button
-              >
+              <el-button size="mini"
+                         v-for="tags in item.tagsList"
+                         :key="tags.id">{{ tags.name }}</el-button>
             </p>
           </el-card>
         </el-timeline-item>
       </el-timeline>
 
       <!-- 分页 -->
-      <el-pagination
-        :page-size="size"
-        layout="prev, pager, next"
-        :total="total"
-        @current-change="handleChange"
-      >
+      <el-pagination :page-size="size"
+                     layout="prev, pager, next"
+                     :total="total"
+                     @current-change="handleChange">
       </el-pagination>
     </div>
   </el-card>
@@ -64,138 +58,138 @@
 export default {
   data() {
     return {
-      content: "",
+      content: '',
       newsList: [],
       current: 1,
       size: 10,
       total: 0,
       userID: 0,
       historyLoading: true,
-    };
+    }
   },
   created: async function () {
     // 获取用户信息
     // const token = window.sessionStorage.getItem("token");
-    const token = window.sessionStorage.getItem("token");
+    const token = window.sessionStorage.getItem('token')
     if (token != null) {
-      this.userID = token;
+      this.userID = token
     } else {
-      this.userID = 0;
+      this.userID = 0
     }
     //初始化历史数据列表
-    this.getHistory();
+    this.getHistory()
     //初始化总数
-    this.getTotal();
+    this.getTotal()
   },
   methods: {
     // 询问确认删除历史记录
     checkDel(newsId) {
-      this.$confirm("此操作将永久删除该记录, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
       })
         .then(() => {
           // 确认删除
-          this.doDel(newsId);
+          this.doDel(newsId)
         })
         .catch(() => {
           this.$message({
-            type: "info",
-            message: "已取消删除",
-          });
-        });
+            type: 'info',
+            message: '已取消删除',
+          })
+        })
     },
     // 处理分页
     async handleChange(current) {
-      this.current = current;
+      this.current = current
 
-      this.getHistory();
+      this.getHistory()
     },
     getNew(id) {
-      this.$router.push("/newsItem?id=" + id);
+      this.$router.push('/newsItem?id=' + id)
     },
     // 获取历史记录列表
     async getHistory() {
       // 发送get请求
       const { data: res } = await this.$http.get(
-        "/viewHistory/getHistory?content=" +
+        '/viewHistory/getHistory?content=' +
           this.content +
-          "&current=" +
+          '&current=' +
           this.current +
-          "&size=" +
+          '&size=' +
           this.size +
-          "&userId=" +
+          '&userId=' +
           this.userID
-      );
+      )
       if (!res.success) {
-        return this.$message.error("查询失败，请稍后再试");
+        return this.$message.error('查询失败，请稍后再试')
       }
-      this.newsList = res.data.newsList;
-      this.newsList.forEach(item =>{
-        if(item.title.length>20){
-          item.title = item.title.substring(0,20)+"...";
+      this.newsList = res.data.newsList
+      this.newsList.forEach((item) => {
+        if (item.title.length > 20) {
+          item.title = item.title.substring(0, 20) + '...'
         }
-      });
-      this.historyLoading = false;
+      })
+      this.historyLoading = false
     },
     // 确认删除历史记录
     async doDel(newsId) {
       const { data: res } = await this.$http.post(
-        "/viewHistory/del?newsId=" + newsId + "&userId=" + this.userID
-      );
+        '/viewHistory/del?newsId=' + newsId + '&userId=' + this.userID
+      )
       if (!res) {
-        this.$message.error(res.message);
+        this.$message.error(res.message)
       } else {
-        this.$message.success(res.message);
+        this.$message.success(res.message)
       }
       //刷新页面
-      this.getHistory();
+      this.getHistory()
       //刷新总数
-      this.getTotal();
+      this.getTotal()
     },
     // 删除全部历史记录
     checkDelAll() {
-      this.$confirm("此操作将删除所有记录, 请谨慎操作?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      this.$confirm('此操作将删除所有记录, 请谨慎操作?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
       })
         .then(() => {
-          this.doDelAll();
+          this.doDelAll()
         })
         .catch(() => {
           this.$message({
-            type: "info",
-            message: "已取消删除",
-          });
-        });
+            type: 'info',
+            message: '已取消删除',
+          })
+        })
     },
     async doDelAll() {
       // 确认删除
       const { data: res } = await this.$http.post(
-        "/viewHistory/delAll?userId=" + this.userID
-      );
+        '/viewHistory/delAll?userId=' + this.userID
+      )
       if (!res) {
-        this.$message.error(res.message);
+        this.$message.error(res.message)
       } else {
-        this.$message.success(res.message);
+        this.$message.success(res.message)
       }
       //刷新页面
-      this.getHistory();
+      this.getHistory()
       //刷新总数
-      this.getTotal();
+      this.getTotal()
     },
     // 获取总数
     async getTotal() {
       const { data: res } = await this.$http.get(
-        "viewHistory/getTotal?userId=" + this.userID
-      );
-      this.total = res.data.total;
-      console.log(this.total);
+        'viewHistory/getTotal?userId=' + this.userID
+      )
+      this.total = res.data.total
+      console.log(this.total)
     },
   },
-};
+}
 </script>
 <style lang="less" scoped>
 .top {

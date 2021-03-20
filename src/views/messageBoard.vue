@@ -146,14 +146,15 @@ export default {
   methods: {
     // 获取留言
     async getMessageBoard() {
-      const { data: res } = await this.$http.get(
-        "/board/getBoard/" +
-          this.current +
-          "/" +
-          this.size +
-          "/" +
-          this.orderByDesc
-      );
+        const { data: res } = await this.$http.get('/board/getBoard/', {
+        params: {
+          current: this.current,
+          size: this.size,
+          content: this.searchContent,
+          status: this.status,
+          orderByDesc: this.orderByDesc,
+        },
+      })
       this.messageList = res.data.boards;
     },
 

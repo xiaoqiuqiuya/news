@@ -5,7 +5,8 @@
       <div class="top">
         <!-- logo和名称 -->
         <div class="icon">
-          <img src="../assets/logo.png" alt />
+          <img src="../assets/logo.png"
+               alt />
           <span>校园新闻</span>
         </div>
       </div>
@@ -13,63 +14,60 @@
       <div class="login-form">
         <el-tabs>
           <el-tab-pane label="登录">
-            <el-form
-              ref="loginFormRef"
-              label-width="0px"
-              :model="form"
-              :rules="loginFormRules"
-              class="demo-form-inline"
-            >
+            <el-form ref="loginFormRef"
+                     label-width="0px"
+                     :model="form"
+                     :rules="loginFormRules"
+                     class="demo-form-inline">
               <!-- 手机号 -->
               <el-form-item prop="phone">
-                <el-input prefix-icon="el-icon-user" v-model="form.phone"></el-input>
+                <el-input prefix-icon="el-icon-user"
+                          v-model="form.phone"></el-input>
               </el-form-item>
               <!-- 密码 -->
               <el-form-item prop="password">
-                <el-input prefix-icon="el-icon-lock" v-model="form.password" type="password"></el-input>
+                <el-input prefix-icon="el-icon-lock"
+                          v-model="form.password"
+                          type="password"></el-input>
               </el-form-item>
               <!-- 按钮区域 -->
               <el-form-item class="login-btns">
-                <el-button type="info" @click="resetForm">重置</el-button>
-                <el-button type="primary" @click="login">登录</el-button>
+                <el-button type="info"
+                           @click="resetForm">重置</el-button>
+                <el-button type="primary"
+                           @click="login">登录</el-button>
               </el-form-item>
             </el-form>
           </el-tab-pane>
           <el-tab-pane label="快速注册">
-            <el-form
-              ref="registFromRef"
-              label-width="0px"
-              :model="registFrom"
-              :rules="registFromRules"
-            >
+            <el-form ref="registFromRef"
+                     label-width="0px"
+                     :model="registFrom"
+                     :rules="registFromRules">
               <!-- 手机号 -->
               <el-form-item prop="phone">
-                <el-input
-                  prefix-icon="el-icon-user"
-                  placeholder="请输入您的手机号"
-                  v-model="registFrom.phone"
-                ></el-input>
+                <el-input prefix-icon="el-icon-user"
+                          placeholder="请输入您的手机号"
+                          v-model="registFrom.phone"></el-input>
               </el-form-item>
               <!-- 密码 -->
               <el-form-item prop="password">
-                <el-input
-                  prefix-icon="el-icon-lock"
-                  placeholder="请输入您的密码"
-                  v-model="registFrom.password"
-                  type="password"
-                ></el-input>
+                <el-input prefix-icon="el-icon-lock"
+                          placeholder="请输入您的密码"
+                          v-model="registFrom.password"
+                          type="password"></el-input>
               </el-form-item>
               <!-- 确认密码 -->
               <el-form-item prop="confirm">
-                <el-input
-                  prefix-icon="el-icon-lock"
-                  placeholder="请再次输入您的密码"
-                  v-model="registFrom.confirm"
-                  type="password"
-                ></el-input>
+                <el-input prefix-icon="el-icon-lock"
+                          placeholder="请再次输入您的密码"
+                          v-model="registFrom.confirm"
+                          type="password"></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" class="regist" @click="regist">注册</el-button>
+                <el-button type="primary"
+                           class="regist"
+                           @click="regist">注册</el-button>
               </el-form-item>
             </el-form>
           </el-tab-pane>
@@ -83,37 +81,37 @@ export default {
   data() {
     // 自定义表单校验
     var validatePhone = (rule, value, callback) => {
-      if (!value) return callback(new Error("请输您的手机号"));
-      if (isNaN(value)) return callback(new Error("请输入正确的手机格式"));
+      if (!value) return callback(new Error('请输您的手机号'))
+      if (isNaN(value)) return callback(new Error('请输入正确的手机格式'))
       if (value.length != 11)
-        return callback(new Error("正确的手机长度应该为11位"));
-      callback();
-    };
+        return callback(new Error('正确的手机长度应该为11位'))
+      callback()
+    }
     var validatePass = (rule, value, callback) => {
-      if (!value) return callback(new Error("请输您的密码"));
+      if (!value) return callback(new Error('请输您的密码'))
       if (value.length < 6 || value.length >= 14)
-        return callback(new Error("密码的长度应该在6到14位之间"));
-      callback();
-    };
+        return callback(new Error('密码的长度应该在6到14位之间'))
+      callback()
+    }
 
     var validateConfirm = (rule, value, callback) => {
-      if (!value) return callback(new Error("请再次确认您的密码"));
+      if (!value) return callback(new Error('请再次确认您的密码'))
       if (value != this.registFrom.password)
-        return callback(new Error("两次输入的密码不一致"));
-      callback();
-    };
+        return callback(new Error('两次输入的密码不一致'))
+      callback()
+    }
 
     return {
       // 登录表单
       form: {
-        phone: "13431709114",
-        password: "3479082..."
+        phone: '13431709114',
+        password: '3479082...',
       },
       // 注册表单
       registFrom: {
-        phone: "",
-        password: "",
-        confirm: ""
+        phone: '',
+        password: '',
+        confirm: '',
       },
 
       // 登录表单校验规则
@@ -121,87 +119,89 @@ export default {
         phone: [
           {
             required: true,
-            message: "请输入账号",
-            trigger: "blur"
-          }
+            message: '请输入账号',
+            trigger: 'blur',
+          },
         ],
         password: [
-          { required: true, message: "请输入密码", trigger: "blur" },
-          { min: 3, max: 15, message: "长度在3到15个字符之间", trigger: "blur" }
-        ]
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          {
+            min: 3,
+            max: 15,
+            message: '长度在3到15个字符之间',
+            trigger: 'blur',
+          },
+        ],
       },
       // 注册表单校验规则
       registFromRules: {
         phone: [
           {
             validator: validatePhone,
-            trigger: "change"
-          }
+            trigger: 'change',
+          },
         ],
         password: [
           {
             validator: validatePass,
-            trigger: "change"
-          }
+            trigger: 'change',
+          },
         ],
         confirm: [
           {
             validator: validateConfirm,
-            trigger: "change"
-          }
-        ]
-      }
-    };
+            trigger: 'change',
+          },
+        ],
+      },
+    }
   },
   methods: {
     // 重置表单数据
     resetForm() {
-      this.$refs.loginFormRef.resetFields();
+      this.$refs.loginFormRef.resetFields()
     },
     //  登录
     login() {
       // 判断表单数据是否符合校验规则
-      this.$refs.loginFormRef.validate(async valid => {
-        if (!valid) return;
+      this.$refs.loginFormRef.validate(async (valid) => {
+        if (!valid) return
         // 发送请求
-        const { data: res } = await this.$http.post(
-          "/tabUser/login",
-          this.form
-        );
+        const { data: res } = await this.$http.post('/tabUser/login', this.form)
         // 登录失败
-        if (!res.success) return this.$message.error(res.message);
+        if (!res.success) return this.$message.error(res.message)
         // 登录成功
-        this.$message.success(res.message);
+        this.$message.success(res.message)
         // 记录token
-        window.sessionStorage.setItem("token",res.data.user.id);
+        window.sessionStorage.setItem('token', res.data.user.id)
         // 路由跳转
-        this.$router.push("/home");
-      });
+        this.$router.push('/home')
+      })
     },
 
     // 注册
     regist() {
       // 判断注册表单的数据是否符合规则
-      this.$refs.registFromRef.validate(async valid => {
+      this.$refs.registFromRef.validate(async (valid) => {
         // 不符合规则
-        if (!valid) return;
+        if (!valid) return
         // 发送请求
         const { data: res } = await this.$http.post(
-          "/tabUser/regist",
+          '/tabUser/regist',
           this.registFrom
-        );
+        )
         // 请求失败
-        if (!res.success) return this.$message.error(res.message);
+        if (!res.success) return this.$message.error(res.message)
         // 注册成功，弹框提示
-        this.$message.success(res.message);
+        this.$message.success(res.message)
         // 自动登录
-        this.form.phone = this.registFrom.phone;
-        this.form.password = this.registFrom.password;
-        this.login();
-      });
-    }
-  }
-};
+        this.form.phone = this.registFrom.phone
+        this.form.password = this.registFrom.password
+        this.login()
+      })
+    },
+  },
+}
 </script>
 <style lang="less" scope>
 .login-box {
