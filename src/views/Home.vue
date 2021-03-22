@@ -22,7 +22,7 @@
           <el-link href="/messageBoard">留言板</el-link>
         </el-menu-item>
         <el-menu-item index="4">
-          <el-link href="/publish">发布</el-link>
+          <el-link @click="toPublish()">发布</el-link>
         </el-menu-item>
         <el-menu-item>
           <el-link href="/timeLine">进度条</el-link>
@@ -142,6 +142,11 @@ export default {
     this.onbeforeunload()
   },
   methods: {
+    //跳转到文章发布页
+    toPublish() {
+      window.sessionStorage.setItem('editNewsId', 0)
+      this.$router.push('/publish')
+    },
     //   退出登录
     logout() {
       window.sessionStorage.clear()

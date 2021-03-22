@@ -75,7 +75,6 @@
 import boardManage from '../admin/boardManage/boardManage'
 import commentManage from '../admin/commentManage/commentManage'
 import allNews from '../admin/newsManage/allNews'
-import badNews from '../admin/newsManage/badNews'
 import checkingNews from '../admin/newsManage/checkingNews'
 import noticeManage from '../admin/noticeManage/noticeManage'
 import questionnaireManage from '../admin/questionnaireManage/questionnaireManage'
@@ -89,7 +88,6 @@ export default {
     objectionNews,
     commentManage,
     allNews,
-    badNews,
     checkingNews,
     noticeManage,
     questionnaireManage,

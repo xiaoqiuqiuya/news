@@ -19,11 +19,9 @@ import safe from "../views/safe"
 // 管理系统
 import adminLogin from "../admin/adminLogin"
 import AIndex from "../admin/AIndex"
-import adminIndex from "../admin/adminIndex"
 import boardManage from "../admin/boardManage/boardManage"
 import commentManage from "../admin/commentManage/commentManage"
 import allNews from "../admin/newsManage/allNews"
-import badNews from "../admin/newsManage/badNews"
 import checkingNews from "../admin/newsManage/checkingNews"
 import noticeManage from "../admin/noticeManage/noticeManage"
 import questionnaireManage from "../admin/questionnaireManage/questionnaireManage"
@@ -90,34 +88,6 @@ const routes = [{
 {
   path:"/adminLogin",
   component:adminLogin
-},{path:"/adminIndex",component:adminIndex,children:[{
-    path: "boardManage",
-    component: boardManage
-  },{
-    path: "commentManage",
-    component: commentManage  
-  },{
-    path: "badNews",
-    component: badNews
-  },{
-    path: "allNews",
-    component: allNews
-  },{
-    path: "checkingNews",
-    component: checkingNews  
-  },{
-    path: "noticeManage",
-    component: noticeManage
-  },{
-    path: "questionnaireManage",
-    component: questionnaireManage
-  },{
-    path: "adminUser",
-    component: adminUser  
-  },{
-    path: "allUser",
-    component: allUser
-  }]
 },{
   path:"/AIndex",
   component:AIndex,
@@ -127,9 +97,6 @@ const routes = [{
   },{
     path: "commentManage",
     component: commentManage  
-  },{
-    path: "badNews",
-    component: badNews
   },{
     path: "allNews",
     component: allNews

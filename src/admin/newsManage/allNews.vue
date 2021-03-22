@@ -231,21 +231,6 @@ export default {
       this.selectedStatus = false
     },
 
-    // 全选
-    handleCheckAllChange(val) {
-      this.checkedCities = val ? this.cities : []
-      this.isIndeterminate = false
-    },
-    // 单个选择触发
-    handleCheckedCitiesChange(value) {
-      let checkedCount = value.length
-      this.checkAll = checkedCount === this.cities.length
-      this.isIndeterminate =
-        checkedCount > 0 && checkedCount < this.cities.length
-    },
-
-    // 删除
-    async handleDelete(index, row) {},
     handleSizeChange(size) {
       this.size = size
       this.getContribute()
@@ -258,7 +243,6 @@ export default {
     // 搜索
     async btnSearch() {
       if (this.title != '') {
-        console.log('重置当前页')
         this.current = 1
       }
       this.getContribute()

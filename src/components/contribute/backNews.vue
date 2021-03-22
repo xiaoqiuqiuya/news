@@ -14,14 +14,9 @@
                class="news_item">
         <div class="news_item_title">
           <span class="news_title">{{ item.title }}</span>
-          <span class="new_option_btn">
-            <el-link type="primary"
-                     @click="modifiedNew(item.id)">修改</el-link>/
-            <el-link type="danger"
-                     @click="delNew(item.id)">删除</el-link>
-          </span>
+           <contribute-option v-bind:newsId="item.id"></contribute-option>
         </div>
-        <el-alert title="不可关闭的 alert"
+        <el-alert :title="item.description"
                   type="error"
                   :closable="false">
         </el-alert>
@@ -37,7 +32,12 @@
 </template>
 
 <script>
+import contributeOption from "./contributeOption"
+
 export default {
+     components:{
+        contributeOption
+    },
   data() {
     return {
       backList: [],

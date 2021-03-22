@@ -9,9 +9,10 @@
     <el-divider></el-divider>
     <p>
       <span>最近收到的通知</span>
-       <el-button style="float: right"
+      <el-button style="float: right"
                  type="text"
-                 @click="getNotifications()"> / 刷新</el-button>
+                 @click="getNotifications()"
+                 @refresh="getNotifications()"> / 刷新</el-button>
       <el-button style="float: right"
                  type="text"
                  @click="updateCheckedStatus(0)">全部已读({{ uncheckCount }})</el-button>
@@ -47,11 +48,20 @@
               <span v-if="item.type == 4"> 回复了你的评论 </span>
               <span v-if="item.type == 5"> 点赞了你的评论 </span>
               <span v-if="item.type == 6"> 点赞了你的回复 </span>
-              <span v-if="item.type == 7"> {{item.content}} </span>
+              <span v-if="item.type == 7"
+                    style="color:#67c23a"> {{item.content}} </span>
+              <span v-if="item.type == 8"
+                    style="color:#f78989"> {{item.content}} </span>
 
+              <span v-if="item.type == 9"
+                    style="color:#f78989"> {{item.content}} </span>
+              <span v-if="item.type == 10"
+                    style="color:#67c23a"> {{item.content}} </span>
             </el-badge>
           </p>
-          <el-card v-if="item.type == 1 || item.type == 2 || item.type == 7 ">
+          <el-card v-if="[1,2,7,8,9,10].indexOf(item.type)!=-1">
+            <contribute-option v-if="item.type==10||item.type==9"
+                               v-bind:newsId="item.object.id"></contribute-option>
             <span class="content">
               {{ item.object.title }}
             </span>
@@ -80,7 +90,11 @@
 </template>
 
 <script>
+import contributeOption from '../components/contribute/contributeOption'
 export default {
+  components: {
+    contributeOption,
+  },
   data() {
     return {
       userId: 0,

@@ -14,12 +14,7 @@
                class="news_item">
         <p>
           <span class="news_title">{{ item.title }}</span>
-          <span class="new_option_btn">
-            <el-link type="primary"
-                     @click="modifiedNew(item.id)">修改</el-link>/
-            <el-link type="danger"
-                     @click="delNew(item.id)">删除</el-link>
-          </span>
+          <contribute-option v-bind:newsId="item.id"></contribute-option>
         </p>
         <span class="news_info">
           <span class="news_info_time">发布于：{{
@@ -44,7 +39,11 @@
 
 </template>
 <script>
+import contributeOption from "./contributeOption"
 export default {
+    components:{
+        contributeOption
+    },
   data() {
     return {
       checkedList: [],

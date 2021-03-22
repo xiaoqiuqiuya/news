@@ -13,7 +13,8 @@
       </div>
       <el-button class="btn_refresh"
                  type="primary"
-                 @click="searchTitle='',getContribute()">刷新</el-button>
+                 @click="searchTitle='',getContribute()"
+                 >刷新</el-button>
       <div class="checkbox_box">
         <el-checkbox :indeterminate="selectedStatus"
                      v-model="selectAll"
@@ -93,43 +94,6 @@
                      :underline="false"
                      class="span_popover">{{scope.row.description}}</el-link>
           </el-popover>
-          <!-- 点赞数 -->
-          <span v-if="item.prop=='likeNum'">
-            {{scope.row.likeNum}}
-          </span>
-          <!-- 浏览量 -->
-          <span v-if="item.prop=='viewNum'">
-            {{scope.row.viewNum}}
-          </span>
-          <!-- 评论数 -->
-          <span v-if="item.prop=='commentNum'">
-            {{scope.row.commentNum}}
-          </span>
-          <!-- 是否已经删除 -->
-          <el-tag v-if="item.prop=='deleted'"
-                  :type="scope.row.deleted?'danger':'success'">
-            {{scope.row.deleted?'已删除':'正常'}}
-          </el-tag>
-          <!-- 文章状态 -->
-          <el-popover v-if="item.prop=='status'"
-                      placement="bottom"
-                      title="修改稿件状态"
-                      trigger="click">
-            <template v-for="(item,index) in tagNameList">
-              <el-tag :key="index"
-                      v-if="index!=0&&scope.row.status!=index"
-                      :type="tagTypeList[index]"
-                      @click="updateStatus(scope.row,index)"
-                      class="status_tag">
-                {{item}}
-              </el-tag>
-            </template>
-            <el-tag slot="reference"
-                    class="status_tag"
-                    :type="tagTypeList[scope.row.status]">
-              {{tagNameList[scope.row.status]}}
-            </el-tag>
-          </el-popover>
           <!-- 创建时间 -->
           <span v-if="item.prop=='gmtCreate'">
             {{$moment(scope.row.gmtCreate).format("YYYY-MM-DD HH:ss")}}
@@ -140,8 +104,35 @@
           </span>
         </template>
       </el-table-column>
-      
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-tag type="danger"
+                  class="btn_checking"
+                  @click="showReBack(scope.row.id)">回退稿件</el-tag>
+          <el-tag type="success"
+                  class="btn_checking"
+                  @click="updateStatus(scope.row.id)">通过审核</el-tag>
+        </template>
+      </el-table-column>
+
     </el-table>
+    <el-dialog title="请告知退稿原因"
+               :visible.sync="dialogVisible"
+               :close-on-click-modal="false"
+               width="40%">
+      <el-radio-group v-model="selectedObjectionItem">
+        <el-radio v-for="item in objectionItem"
+                  :key="item.id"
+                  :label="item.name">{{item.name}}</el-radio>
+      </el-radio-group>
+      <el-input v-model="inputObjectionItem"></el-input>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="doReBack()">确 定</el-button>
+      </span>
+    </el-dialog>
     <!-- 文章预览 -->
     <el-dialog title="文章预览"
                :visible.sync="showContribute">
@@ -155,18 +146,28 @@
                    layout="total, sizes, prev, pager, next, jumper"
                    :total="total">
     </el-pagination>
-
   </el-card>
 </template>
 <script>
 export default {
   created: function () {
+    const token = window.sessionStorage.getItem('token')
+    if (!token) {
+      return this.$message.error('当前未登录')
+    }
+    this.aId = token
     this.getContribute()
   },
   data() {
     return {
+      aId: 0, // 管理员id
       tagNameList: ['', '草稿', '审核中', '已驳回', '审核通过'], //文章的状态列表
       tagTypeList: ['', 'info', 'warning', 'danger', 'success'],
+      reBackId: 0, //退稿的id
+      dialogVisible: false, //控制显示询问退稿原因
+      objectionItem: [], //可供选择退稿原因
+      selectedObjectionItem: '', //选中的退稿原因
+      inputObjectionItem: '', //输入的退稿原因
       selectAll: false, //判断是否全部选中
       // 确定展示的列
       showItem: [],
@@ -176,11 +177,6 @@ export default {
         { prop: 'description', label: '描述' },
         { prop: 'original', label: '是否原创' },
         { prop: 'originalLink', label: '原创链接' },
-        { prop: 'likeNum', label: '点赞数' },
-        { prop: 'viewNum', label: '浏览量' },
-        { prop: 'commentNum', label: '评论数' },
-        { prop: 'deleted', label: '是否已经删除' },
-        { prop: 'status', label: '文章状态' },
         { prop: 'gmtCreate', label: '创建时间' },
         { prop: 'gmtUpdate', label: '更新时间' },
       ],
@@ -196,18 +192,41 @@ export default {
     }
   },
   methods: {
-    //修改文章
-    async updateStatus(row, index) {
-      const newsId = row.id
-      const { data: res } = await this.$http.post('/tabNews/updateStatus', {
-        newsId: newsId,
-        status: index,
+    async showReBack(id) {
+      this.reBackId = id
+      this.dialogVisible = true
+      if (this.objectionItem == '') {
+        const { data: res } = await this.$http.get('/tabObjectionItem/getItem')
+        if (!res.success) {
+          return this.$message.error(res.message)
+        }
+        this.objectionItem = res.data.items
+      }
+    },
+    async doReBack() {
+      const result = this.selectedObjectionItem + this.inputObjectionItem
+      if (result == '') {
+        return this.$message.error('请告知退稿信息')
+      }
+      const { data: res } = await this.$http.post('/tabNews/reBack', {
+        pId: this.reBackId,
+        aId: this.aId,
+        result: result,
       })
       if (!res.success) {
         return this.$message.error(res.message)
       }
-      this.$message.success("修改文章状态成功")
-      row.status = index
+      this.dialogVisible = false
+      this.getContribute()
+    },
+    //修改文章状态
+    async updateStatus(newsId) {
+      const { data: res } = await this.$http.post('/tabNews/passNews/' + newsId)
+      if (!res.success) {
+        return this.$message.error(res.message)
+      }
+      this.$message.success('修改文章状态成功')
+      this.getContribute()
     },
     //预览文章
     preView(row) {
@@ -231,21 +250,7 @@ export default {
       this.selectedStatus = false
     },
 
-    // 全选
-    handleCheckAllChange(val) {
-      this.checkedCities = val ? this.cities : []
-      this.isIndeterminate = false
-    },
-    // 单个选择触发
-    handleCheckedCitiesChange(value) {
-      let checkedCount = value.length
-      this.checkAll = checkedCount === this.cities.length
-      this.isIndeterminate =
-        checkedCount > 0 && checkedCount < this.cities.length
-    },
-
-    // 删除
-    async handleDelete(index, row) {},
+    // 处理选择每页显示数
     handleSizeChange(size) {
       this.size = size
       this.getContribute()
@@ -319,5 +324,12 @@ export default {
   margin: 5px;
   display: inherit;
   text-align: center;
+}
+.btn_checking {
+  cursor: pointer;
+  margin: 0 10px;
+}
+.el-radio {
+  margin: 5px 10px;
 }
 </style>
