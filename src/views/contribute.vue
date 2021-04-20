@@ -1,4 +1,5 @@
 <template>
+  <el-main>
   <el-card>
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/user' }">个人中心</el-breadcrumb-item>
@@ -29,7 +30,7 @@
       </el-tabs>
     </div>
   </el-card>
-
+  </el-main>
 </template>
 
 <script>

@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <div>
     <div class="top_option">
       <el-button class="btn_refresh"
                  type="primary"
@@ -128,7 +128,7 @@
                    :total="total">
     </el-pagination>
 
-  </el-card>
+    </div>
 </template>
 <script>
 export default {
@@ -192,26 +192,25 @@ export default {
 }
 </script>
 <style scoped lang="less">
-.el-card {
-  .top_option {
-    margin-bottom: 20px;
-    border-left: 5px solid #67c23a;
-    padding-left: 20px;
-    .checkbox_box {
-      margin-top: 10px;
-    }
-    .serarch_input {
-      display: inline-block;
-      width: 30%;
-    }
-    .btn_refresh {
-      margin: 0 20px;
-    }
-    .btn_add {
-      float: right;
-    }
+.top_option {
+  margin-bottom: 20px;
+  border-left: 5px solid #67c23a;
+  padding-left: 20px;
+  .checkbox_box {
+    margin-top: 10px;
+  }
+  .serarch_input {
+    display: inline-block;
+    width: 30%;
+  }
+  .btn_refresh {
+    margin: 0 20px;
+  }
+  .btn_add {
+    float: right;
   }
 }
+
 .status_box {
   div {
     margin: 5px;

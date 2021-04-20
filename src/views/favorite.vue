@@ -1,62 +1,57 @@
 <template>
-  <!-- 首页 -->
-  <el-card>
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/user' }">个人中心</el-breadcrumb-item>
-      <el-breadcrumb-item>我的收藏</el-breadcrumb-item>
-    </el-breadcrumb>
-    <!-- 顶部分割线 -->
-    <el-divider></el-divider>
-    <el-tabs tab-position="left">
-      <el-tab-pane
-        :label="item.name + '(' + item.list.length + ')'"
-        v-for="item in favList"
-        :key="item.id"
-      >
-        <el-card
-          v-for="news in item.list"
-          :key="news.id"
-          class="news_item"
-          v-loading="favLoading"
-        >
-          <p>
-            <span class="news_title">{{ news.title }} </span>
+  <el-main>
+    <!-- 首页 -->
+    <el-card>
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item :to="{ path: '/user' }">个人中心</el-breadcrumb-item>
+        <el-breadcrumb-item>我的收藏</el-breadcrumb-item>
+      </el-breadcrumb>
+      <!-- 顶部分割线 -->
+      <el-divider></el-divider>
+      <el-tabs tab-position="left">
+        <el-tab-pane :label="item.name + '(' + item.list.length + ')'"
+                     v-for="item in favList"
+                     :key="item.id">
+          <el-card v-for="news in item.list"
+                   :key="news.id"
+                   class="news_item"
+                   v-loading="favLoading">
+            <p>
+              <span class="news_title">{{ news.title }} </span>
 
-            <el-dropdown style="float: right" trigger="click">
-              <span class="el-dropdown-link">
-                <i class="el-icon-delete news_remove_fav"
-                  >移出
-                  <i class="el-icon-arrow-down el-icon--right"></i>
-                </i>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>
-                  <span @click="removeFav(item.id, news.id)"
-                    >移出当前收藏夹</span
-                  >
-                </el-dropdown-item>
-                <el-dropdown-item icon="el-icon-delete">
-                  <span @click="removeFav(0, news.id)"> 移出所有收藏夹 </span>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </p>
-          <span class="news_info">
-            <span class="news_info_author">{{ news.authorName }}</span
-            >|
-            <span class="news_info_time">{{
+              <el-dropdown style="float: right"
+                           trigger="click">
+                <span class="el-dropdown-link">
+                  <i class="el-icon-delete news_remove_fav">移出
+                    <i class="el-icon-arrow-down el-icon--right"></i>
+                  </i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item>
+                    <span @click="removeFav(item.id, news.id)">移出当前收藏夹</span>
+                  </el-dropdown-item>
+                  <el-dropdown-item icon="el-icon-delete">
+                    <span @click="removeFav(0, news.id)"> 移出所有收藏夹 </span>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </p>
+            <span class="news_info">
+              <span class="news_info_author">{{ news.authorName }}</span>|
+              <span class="news_info_time">{{
               $moment(news.gmtCreate).format("YYYY-MM-DD HH:mm")
             }}</span>
-            <span class="news_info_tags">
-              <span v-for="tag in news.tagsList" :key="tag.id"
-                >{{ tag.name }} /
+              <span class="news_info_tags">
+                <span v-for="tag in news.tagsList"
+                      :key="tag.id">{{ tag.name }} /
+                </span>
               </span>
             </span>
-          </span>
-        </el-card>
-      </el-tab-pane>
-    </el-tabs>
-  </el-card>
+          </el-card>
+        </el-tab-pane>
+      </el-tabs>
+    </el-card>
+    </el-main>
 </template>
 
 <script>
@@ -70,59 +65,59 @@ export default {
       total: 0, // 总条数
       favDir: 0, // 收藏夹的id
       favLoading: true,
-    };
+    }
   },
   created: async function () {
     // 获取登陆的用户
-    const token = window.sessionStorage.getItem("token");
+    const token = window.sessionStorage.getItem('token')
     if (token != null) {
-      this.userId = token;
+      this.userId = token
     } else {
-      this.userId = 0;
+      this.userId = 0
     }
 
     // 初始化收藏夹列表
-    this.getFav();
+    this.getFav()
   },
   methods: {
     //
     getId(id) {
-      console.log(id);
+      console.log(id)
     },
     //判断登录状态
     getLoginStatus() {
       if (this.userId == 0) {
-        this.$message.error("登陆信息已过期，请重新登录");
-        return false;
+        this.$message.error('登陆信息已过期，请重新登录')
+        return false
       }
-      return true;
+      return true
     },
 
     // const {data:res} = await this.$http.get("");
     // 获取用户的收藏夹
     async getFav() {
       if (this.getLoginStatus) {
-        const { data: res } = await this.$http.get("/favouriteNews/getFav", {
+        const { data: res } = await this.$http.get('/favouriteNews/getFav', {
           params: {
             favDir: this.favDir,
             userId: this.userId,
             current: this.current,
             size: this.size,
           },
-        });
+        })
         if (!res.success) {
-          this.$message.error(res.message);
+          this.$message.error(res.message)
         }
-        this.favList = res.data.favList;
-        console.log(this.favList);
-        this.favLoading = false;
+        this.favList = res.data.favList
+        console.log(this.favList)
+        this.favLoading = false
         this.favList.forEach((item) => {
           item.list.forEach((newsItem) => {
             if (newsItem.title.length > 30) {
-              newsItem.title = newsItem.title.substring(0, 30) + "...";
+              newsItem.title = newsItem.title.substring(0, 30) + '...'
             }
-          });
-        });
+          })
+        })
       }
     },
     // 获取总数
@@ -132,14 +127,14 @@ export default {
     },
     //处理分页
     handelCurrentChange(current) {
-      this.current = current;
-      this.getFav();
+      this.current = current
+      this.getFav()
     },
     // 移除收藏,移出当前收藏夹
     async removeFav(favDirId, newsId) {
       if (this.getLoginStatus) {
         const { data: res } = await this.$http.delete(
-          "/favouriteNews/removeFav",
+          '/favouriteNews/removeFav',
           {
             params: {
               userId: this.userId,
@@ -147,14 +142,14 @@ export default {
               dirId: favDirId,
             },
           }
-        );
+        )
 
         if (!res.success) {
-          this.$message.error(res.message);
+          this.$message.error(res.message)
         }
-        this.$message.success(res.message);
+        this.$message.success(res.message)
         // 刷新页面数据
-        this.getFav();
+        this.getFav()
       }
     },
     // 确认移除收藏
@@ -163,7 +158,7 @@ export default {
       }
     },
   },
-};
+}
 </script>
 <style lang="less" scoped>
 .news_title {

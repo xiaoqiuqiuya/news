@@ -1,5 +1,5 @@
 <template>
-  <div class="login-box">
+  <div class="my-login-box">
     <div class="login">
       <!-- 头部区域 -->
       <div class="top">
@@ -106,6 +106,7 @@ export default {
       form: {
         phone: '13431709114',
         password: '3479082...',
+        name: 'user',
       },
       // 注册表单
       registFrom: {
@@ -163,11 +164,21 @@ export default {
     },
     //  登录
     login() {
+      // 打开提示
+
+     const message =  this.$message({
+          showClose: false,
+          message: '正在登陆中...请稍等',
+          duration:0,
+        });
+      
       // 判断表单数据是否符合校验规则
       this.$refs.loginFormRef.validate(async (valid) => {
         if (!valid) return
         // 发送请求
         const { data: res } = await this.$http.post('/tabUser/login', this.form)
+        // 关闭提示
+        message.close();
         // 登录失败
         if (!res.success) return this.$message.error(res.message)
         // 登录成功
@@ -188,7 +199,8 @@ export default {
         // 发送请求
         const { data: res } = await this.$http.post(
           '/tabUser/regist',
-          this.registFrom
+          JSON.stringify(this.registFrom),
+          { headers: { 'Content-Type': 'application/json;charset=UTF-8' } }
         )
         // 请求失败
         if (!res.success) return this.$message.error(res.message)
@@ -204,49 +216,51 @@ export default {
 }
 </script>
 <style lang="less" scope>
-.login-box {
+.my-login-box {
   height: 100%;
-  background: #ffffff;
-}
-.login {
-  box-shadow: 0 0 15px 1px #d2e1ee;
-  border-radius: 16px;
-  width: 396px;
-  height: 540px;
-  position: relative;
-  left: 75%;
-  top: 50%;
-  transform: translate(-25%, -50%);
-  .top {
-    height: 100px;
-    .icon {
-      display: flex;
-      align-items: center;
-      position: relative;
-      left: 75%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 1.5rem;
-      img {
-        width: 48px;
-        height: 48px;
-        margin-right: 10px;
+  background-image: url('../assets/bg_login.png');
+  background-size: 100% 100%;
+  .login {
+    box-shadow: 0 0 15px 1px #d2e1ee;
+    border-radius: 16px;
+    background-color: #b5676a;
+    width: 396px;
+    height: 540px;
+    position: relative;
+    left: 75%;
+    top: 50%;
+    transform: translate(-25%, -50%);
+    .top {
+      height: 100px;
+      .icon {
+        display: flex;
+        align-items: center;
+        position: relative;
+        left: 75%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.5rem;
+        img {
+          width: 48px;
+          height: 48px;
+          margin-right: 10px;
+        }
       }
     }
-  }
 
-  .login-form {
-    margin: 5% 10%;
-    height: 60%;
-    padding: 5% 11%;
+    .login-form {
+      margin: 5% 10%;
+      height: 60%;
+      padding: 5% 11%;
 
-    .login-btns {
-      display: flex;
-      justify-content: flex-end;
+      .login-btns {
+        display: flex;
+        justify-content: flex-end;
+      }
     }
-  }
-  .regist {
-    width: 100%;
+    .regist {
+      width: 100%;
+    }
   }
 }
 </style>

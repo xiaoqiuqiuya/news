@@ -9,25 +9,25 @@
         <!-- 新闻列表 -->
         <el-card class="news_list">
           <!--新闻轮播-->
-          <el-carousel :interval="4000"
+          <!-- <el-carousel :interval="4000"
                        height="200px"
                        indicator-position="outside">
             <el-carousel-item v-for="item in topList"
                               :key="item.id"
                               @click="getNew(item.id)">
-              <div class="news_item">
+              <div class="news_item"> -->
                 <!-- 标题 -->
-                <div class="news_top">
+                <!-- <div class="news_top">
                   <h2>{{ item.title }}</h2>
-                </div>
+                </div> -->
                 <!-- 内容 -->
-                <div class="news_content"
-                     v-html="item.content"></div>
+                <!-- <div class="news_content"
+                     v-html="item.content"></div> -->
                 <!-- 相关信息 -->
-                <div class="news_info">{{ item.date }}</div>
+                <!-- <div class="news_info">{{ item.date }}</div>
               </div>
             </el-carousel-item>
-          </el-carousel>
+          </el-carousel> -->
           <!-- 一条新闻 -->
           <div class="news_item"
                v-for="item in newsList"

@@ -13,9 +13,15 @@
 
         <el-submenu index="2">
           <template slot="title">新闻热榜</template>
-          <el-menu-item index="2-1">周榜</el-menu-item>
-          <el-menu-item index="2-2">月榜</el-menu-item>
-          <el-menu-item index="2-3">年度大事件</el-menu-item>
+          <el-menu-item index="2-1">
+            <el-link href="/ranking">周榜</el-link>
+          </el-menu-item>
+          <el-menu-item index="2-2">
+            <el-link href="/ranking">月榜</el-link>
+          </el-menu-item>
+          <el-menu-item index="2-3">
+            <el-link href="/ranking">年度大事件</el-link>
+          </el-menu-item>
         </el-submenu>
 
         <el-menu-item index="3">
@@ -27,7 +33,9 @@
         <el-menu-item>
           <el-link href="/timeLine">进度条</el-link>
         </el-menu-item>
-
+        <el-menu-item>
+          <el-link href="/survey">问卷调查</el-link>
+        </el-menu-item>
         <el-submenu index="6"
                     v-if="userId != 0">
           <template slot="title">个人中心
@@ -100,7 +108,7 @@
 }
 .el-main {
   background-color: #ffffff;
-  padding-top: 0;
+  padding: 0;
 }
 .item {
   margin-top: 10px;
@@ -118,6 +126,7 @@ export default {
     }
   },
   created: function () {
+  
     const token = window.sessionStorage.getItem('token')
     if (token != null) {
       this.userId = token
@@ -131,7 +140,7 @@ export default {
     // WebSocket
     if ('WebSocket' in window) {
       this.websocket = new WebSocket(
-        'ws://localhost:8889/websocket/' + this.userId
+        'ws://8.129.115.88:8889/websocket/' + this.userId
       )
       this.initWebSocket()
     } else {

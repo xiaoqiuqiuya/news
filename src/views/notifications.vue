@@ -1,92 +1,94 @@
 <template>
-  <!-- 首页 -->
-  <el-card>
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/user' }">个人中心</el-breadcrumb-item>
-      <el-breadcrumb-item>通知中心</el-breadcrumb-item>
-    </el-breadcrumb>
-    <!-- 顶部分割线 -->
-    <el-divider></el-divider>
-    <p>
-      <span>最近收到的通知</span>
-      <el-button style="float: right"
-                 type="text"
-                 @click="getNotifications()"
-                 @refresh="getNotifications()"> / 刷新</el-button>
-      <el-button style="float: right"
-                 type="text"
-                 @click="updateCheckedStatus(0)">全部已读({{ uncheckCount }})</el-button>
-    </p>
-    <el-timeline>
-      <el-timeline-item v-for="item in notices"
-                        :key="item.id"
-                        :timestamp="$moment(item.gmtCreate).format('YYYY-MM-DD HH:mm')"
-                        placement="top">
-        <el-card>
-          <span style="float: right"
-                type="text">
-            <el-link type="primary"
-                     v-if="item.checked"
-                     @click="updateCheckedStatus(item.id)">标记为未读</el-link>
-            <el-link type="primary"
-                     v-if="!item.checked"
-                     @click="updateCheckedStatus(item.id)">标记为已读</el-link>
-            /
-            <el-link type="danger"
-                     @click="deleteNotice(item.id)">删除</el-link>
-          </span>
-          <p>
-            <el-badge is-dot
-                      :hidden="item.checked">
-              <span class="sender_name">
-                {{ item.senderName }}
+  <el-main>
+    <!-- 首页 -->
+    <el-card>
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item :to="{ path: '/user' }">个人中心</el-breadcrumb-item>
+        <el-breadcrumb-item>通知中心</el-breadcrumb-item>
+      </el-breadcrumb>
+      <!-- 顶部分割线 -->
+      <el-divider></el-divider>
+      <p>
+        <span>最近收到的通知</span>
+        <el-button style="float: right"
+                   type="text"
+                   @click="getNotifications()"
+                   @refresh="getNotifications()"> / 刷新</el-button>
+        <el-button style="float: right"
+                   type="text"
+                   @click="updateCheckedStatus(0)">全部已读({{ uncheckCount }})</el-button>
+      </p>
+      <el-timeline>
+        <el-timeline-item v-for="item in notices"
+                          :key="item.id"
+                          :timestamp="$moment(item.gmtCreate).format('YYYY-MM-DD HH:mm')"
+                          placement="top">
+          <el-card>
+            <span style="float: right"
+                  type="text">
+              <el-link type="primary"
+                       v-if="item.checked"
+                       @click="updateCheckedStatus(item.id)">标记为未读</el-link>
+              <el-link type="primary"
+                       v-if="!item.checked"
+                       @click="updateCheckedStatus(item.id)">标记为已读</el-link>
+              /
+              <el-link type="danger"
+                       @click="deleteNotice(item.id)">删除</el-link>
+            </span>
+            <p>
+              <el-badge is-dot
+                        :hidden="item.checked">
+                <span class="sender_name">
+                  {{ item.senderName }}
+                </span>
+
+                <span v-if="item.type == 1"> 点赞了你的文章 </span>
+                <span v-if="item.type == 2"> 收藏了你的文章 </span>
+                <span v-if="item.type == 3"> 评论了你的文章 </span>
+                <span v-if="item.type == 4"> 回复了你的评论 </span>
+                <span v-if="item.type == 5"> 点赞了你的评论 </span>
+                <span v-if="item.type == 6"> 点赞了你的回复 </span>
+                <span v-if="item.type == 7"
+                      style="color:#67c23a"> {{item.content}} </span>
+                <span v-if="item.type == 8"
+                      style="color:#f78989"> {{item.content}} </span>
+
+                <span v-if="item.type == 9"
+                      style="color:#f78989"> {{item.content}} </span>
+                <span v-if="item.type == 10"
+                      style="color:#67c23a"> {{item.content}} </span>
+              </el-badge>
+            </p>
+            <el-card v-if="[1,2,7,8,9,10].indexOf(item.type)!=-1">
+              <contribute-option v-if="item.type==10||item.type==9"
+                                 v-bind:newsId="item.object.id"></contribute-option>
+              <span class="content">
+                {{ item.object.title }}
               </span>
-
-              <span v-if="item.type == 1"> 点赞了你的文章 </span>
-              <span v-if="item.type == 2"> 收藏了你的文章 </span>
-              <span v-if="item.type == 3"> 评论了你的文章 </span>
-              <span v-if="item.type == 4"> 回复了你的评论 </span>
-              <span v-if="item.type == 5"> 点赞了你的评论 </span>
-              <span v-if="item.type == 6"> 点赞了你的回复 </span>
-              <span v-if="item.type == 7"
-                    style="color:#67c23a"> {{item.content}} </span>
-              <span v-if="item.type == 8"
-                    style="color:#f78989"> {{item.content}} </span>
-
-              <span v-if="item.type == 9"
-                    style="color:#f78989"> {{item.content}} </span>
-              <span v-if="item.type == 10"
-                    style="color:#67c23a"> {{item.content}} </span>
-            </el-badge>
-          </p>
-          <el-card v-if="[1,2,7,8,9,10].indexOf(item.type)!=-1">
-            <contribute-option v-if="item.type==10||item.type==9"
-                               v-bind:newsId="item.object.id"></contribute-option>
-            <span class="content">
-              {{ item.object.title }}
-            </span>
-          </el-card>
-          <el-card v-if="3 <= item.type && item.type <= 6">
-            <span class="content">
-              {{ item.object.content }}
-            </span>
-            <div class="content_foot">
-              <span class="gmt_create">{{
+            </el-card>
+            <el-card v-if="3 <= item.type && item.type <= 6">
+              <span class="content">
+                {{ item.object.content }}
+              </span>
+              <div class="content_foot">
+                <span class="gmt_create">{{
                 $moment(item.object.gmtCreate).format("YYYY-DD-MM HH:mm")
               }}</span>
-            </div>
+              </div>
+            </el-card>
           </el-card>
-        </el-card>
-      </el-timeline-item>
-    </el-timeline>
+        </el-timeline-item>
+      </el-timeline>
 
-    <!-- 分页 -->
-    <el-pagination :page-size="size"
-                   layout="prev, pager, next"
-                   :total="total"
-                   @current-change="handleChange">
-    </el-pagination>
-  </el-card>
+      <!-- 分页 -->
+      <el-pagination :page-size="size"
+                     layout="prev, pager, next"
+                     :total="total"
+                     @current-change="handleChange">
+      </el-pagination>
+    </el-card>
+  </el-main>
 </template>
 
 <script>

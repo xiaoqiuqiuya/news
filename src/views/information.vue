@@ -33,11 +33,6 @@
                         prop="wechat">
             <el-input v-model="form.wechat"></el-input>
           </el-form-item>
-          <el-form-item label="手机号"
-                        style="width: 40%"
-                        prop="phone">
-            <el-input v-model="form.phone"></el-input>
-          </el-form-item>
           <el-form-item label="年龄"
                         style="width: 40%"
                         prop="age">
@@ -84,6 +79,18 @@ export default {
     }
   },
   data() {
+    var validateAge = (rule, value, callback) => {
+      if (isNaN(value)) return callback(new Error('请输入正确的年龄'))
+      if (value > 150 || value < 0)
+        return callback(new Error('请输入正确的年龄'))
+      callback()
+    }
+  var validateHeight = (rule, value, callback) => {
+      if (isNaN(value)) return callback(new Error('请输入正确的身高格式'))
+      if (value > 300 || value < 0)
+        return callback(new Error('请输入正确的身高格式'))
+      callback()
+    }
     return {
       userId: 0,
       form: {
@@ -123,8 +130,18 @@ export default {
           },
           { min: 11, max: 11, message: '请输入正确的手机号', trigger: 'blur' },
         ],
-        age: [{ type: 'number', message: '年龄必须为数字值' }],
-        height: [{ type: 'number', message: '身高必须为数字值,单位cm' }],
+        age: [
+          {
+            validator: validateAge,
+            trigger: 'blur',
+          },
+        ],
+        height: [
+          {
+            validator: validateHeight,
+            trigger: 'blur',
+          },
+        ],
       },
     }
   },
@@ -148,7 +165,7 @@ export default {
           return
         }
         const { data: res } = await this.$http.post(
-          '/tabUser/updateUser',
+          '/tabUser/updateUser/update',
           this.form
         )
         if (!res.success) {

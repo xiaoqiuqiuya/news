@@ -54,7 +54,7 @@
                        @tab-remove="removeTab">
                 <el-tab-pane name="首页"
                              label="首页">
-                  <objection-news></objection-news>
+                  <welcome></welcome>
                 </el-tab-pane>
                 <el-tab-pane v-for="(item,index) in editableTabs"
                              :key="index"
@@ -81,6 +81,7 @@ import questionnaireManage from '../admin/questionnaireManage/questionnaireManag
 import adminUser from '../admin/userManage/adminUser'
 import allUser from '../admin/userManage/allUser'
 import objectionNews from '../admin/newsManage/objectionNews'
+import welcome from '../admin/welcome'
 
 export default {
   components: {
@@ -93,8 +94,14 @@ export default {
     questionnaireManage,
     adminUser,
     allUser,
+    welcome,
   },
   created: async function () {
+    const adminToken = window.sessionStorage.getItem('adminToken')
+    if(adminToken==null){
+      // 跳回到登录页
+      return this.$router.push("/adminLogin")
+    }
     const { data: res } = await this.$http.get('/adminMenu/getMenuList')
     if (!res.success) {
       return this.$message.error(res.message)
@@ -179,10 +186,10 @@ export default {
   height: 100%;
   .el-main {
     width: 100%;
-    height: 100%;
+    // height: 100%;
     padding: 0;
     .el-container {
-      height: 100%;
+      //   height: 100%;
       .el-aside {
         height: 100%;
         .el-menu {
@@ -191,11 +198,11 @@ export default {
         }
       }
       .el-main {
-        height: 100%;
+        // height: 100%;
         .el-card {
-          height: 100%;
+          //   height: 100%;
           div {
-            height: 100%;
+            // height: 100%;
             .el-tabs {
               .el-pane {
                 height: 100%;

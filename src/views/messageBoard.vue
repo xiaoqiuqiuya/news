@@ -4,7 +4,8 @@
     <!-- 间距20px -->
     <el-row :gutter="20">
       <!-- 偏移2格 -->
-      <el-col :offset="2" :span="22">
+      <el-col :offset="2"
+              :span="22">
         <!-- 主体内容 -->
         <el-card>
           <div>
@@ -31,17 +32,13 @@
             <ul>
               <li>没有进行登录的用户也可以发表留言</li>
               <li>
-                发布留言时，请遵守您所在国家和中华人民共和国的法律法规，<strong
-                  >禁止发布政治相关内容；</strong
-                >
+                发布留言时，请遵守您所在国家和中华人民共和国的法律法规，<strong>禁止发布政治相关内容；</strong>
               </li>
               <li>
                 留言内容应该与本站内容相关，禁止一切无意义和严重注水的内容；
               </li>
               <li>
-                请尊重他人，友好留言，<strong
-                  >请像和他人面对面谈话时一样保持对他人的尊重；</strong
-                >
+                请尊重他人，友好留言，<strong>请像和他人面对面谈话时一样保持对他人的尊重；</strong>
               </li>
               <li>
                 禁止发布<strong><s>商业广告</s>；</strong>其他广告也不行
@@ -54,22 +51,19 @@
 
           <!-- 输入框 -->
           <div class="input_div">
-            <el-input
-              placeholder="在此留下你你的脚步吧~"
-              v-model="content"
-              class="my-input"
-              maxlength="100"
-              show-word-limit
-            >
-              <el-button
-                slot="append"
-                icon="el-icon-s-promotion"
-                @click="postBoard"
-              ></el-button>
+            <el-input placeholder="在此留下你你的脚步吧~"
+                      v-model="content"
+                      class="my-input"
+                      maxlength="100"
+                      show-word-limit>
+              <el-button slot="append"
+                         icon="el-icon-s-promotion"
+                         @click="postBoard"></el-button>
             </el-input>
           </div>
           <div>
-            <div v-for="board in messageList" :key="board.id">
+            <div v-for="board in messageList"
+                 :key="board.id">
               <div>
                 <span class="userName">{{ board.userName }}</span>
                 <span class="gmtTime">{{
@@ -82,21 +76,17 @@
             </div>
             <div>
               <!-- 分页 -->
-              <el-pagination
-                :page-size="size"
-                layout="prev, pager, next"
-                :total="count"
-                @current-change="handleChange"
-                class="page"
-              >
+              <el-pagination :page-size="size"
+                             layout="prev, pager, next"
+                             :total="count"
+                             @current-change="handleChange"
+                             class="page">
               </el-pagination>
-              <el-switch
-                v-model="orderByDesc"
-                active-text="按时间倒序排序"
-                inactive-text="按时间正序排序"
-                @change="handleSwitchChange"
-                class="sortByDescOrAsc"
-              >
+              <el-switch v-model="orderByDesc"
+                         active-text="按时间倒序排序"
+                         inactive-text="按时间正序排序"
+                         @change="handleSwitchChange"
+                         class="sortByDescOrAsc">
               </el-switch>
             </div>
           </div>
@@ -109,44 +99,44 @@
 <script>
 export default {
   created: async function () {
-    const token = window.sessionStorage.getItem("token");
+    const token = window.sessionStorage.getItem('token')
     if (!token) {
       // 没有登陆
-      this.userId = 0;
+      this.userId = 0
     } else {
       // 已经登陆
-      this.userId = token;
+      this.userId = token
     }
     // 获取留言
-    this.getMessageBoard();
+    this.getMessageBoard()
     // 获取总数
-    const { data: res } = await this.$http.get("/board/getTotal");
-    this.count = res.data.count;
+    const { data: res } = await this.$http.get('/board/getTotal')
+    this.count = res.data.count
   },
   data() {
     return {
       messageList: [],
       userId: 0,
-      content: "", // 留言内容
+      content: '', // 留言内容
       current: 1,
       size: 10,
       count: 0,
       loading: false,
       orderByDesc: true, // 排序方式
-    };
+    }
   },
   computed: {
     noMore() {
-      return this.currentCount >= this.count;
+      return this.currentCount >= this.count
     },
     disabled() {
-      return this.loading || this.noMore;
+      return this.loading || this.noMore
     },
   },
   methods: {
     // 获取留言
     async getMessageBoard() {
-        const { data: res } = await this.$http.get('/board/getBoard/', {
+      const { data: res } = await this.$http.get('/board/getBoard/', {
         params: {
           current: this.current,
           size: this.size,
@@ -155,33 +145,33 @@ export default {
           orderByDesc: this.orderByDesc,
         },
       })
-      this.messageList = res.data.boards;
+      this.messageList = res.data.boardList
     },
 
     //发布留言
     async postBoard() {
-      const { data: res } = await this.$http.post("/board/postBoard", {
+      const { data: res } = await this.$http.post('/board/postBoard', {
         content: this.content,
         userId: this.userId,
-      });
+      })
       if (!res.success) {
-        return this.$message.error(res.message);
+        return this.$message.error(res.message)
       }
-      this.$message.success(res.message);
+      this.$message.success(res.message)
       // 刷新留言板
-      this.getMessageBoard();
+      this.getMessageBoard()
     },
     // 处理分页
     handleChange(current) {
-      this.current = current;
-      this.getMessageBoard();
+      this.current = current
+      this.getMessageBoard()
     },
     handleSwitchChange() {
       //取反
-      this.getMessageBoard();
+      this.getMessageBoard()
     },
   },
-};
+}
 </script>
 <style lang="less" scoped>
 .container {
