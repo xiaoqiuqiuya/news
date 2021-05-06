@@ -7,28 +7,7 @@
       <el-col :offset="2"
               :span="16">
         <!-- 新闻列表 -->
-        <el-card class="news_list">
-          <!--新闻轮播-->
-          <!-- <el-carousel :interval="4000"
-                       height="200px"
-                       indicator-position="outside">
-            <el-carousel-item v-for="item in topList"
-                              :key="item.id"
-                              @click="getNew(item.id)">
-              <div class="news_item"> -->
-                <!-- 标题 -->
-                <!-- <div class="news_top">
-                  <h2>{{ item.title }}</h2>
-                </div> -->
-                <!-- 内容 -->
-                <!-- <div class="news_content"
-                     v-html="item.content"></div> -->
-                <!-- 相关信息 -->
-                <!-- <div class="news_info">{{ item.date }}</div>
-              </div>
-            </el-carousel-item>
-          </el-carousel> -->
-          <!-- 一条新闻 -->
+        <div class="news_list">
           <div class="news_item"
                v-for="item in newsList"
                :key="item.id">
@@ -59,7 +38,7 @@
                            size="mini"
                            v-for="tags in item.tagsList"
                            :key="tags.id"
-                           @click="getNewsList(tags.id)">{{ tags.name }}</el-button>
+                           @click="reloadCurrent(),tags.id == selectTag ? getNewsList(0):getNewsList(tags.id) ">{{ tags.name }}</el-button>
               </p>
             </div>
             <!-- 底部分割线 -->
@@ -71,7 +50,12 @@
                          :total="total"
                          @current-change="handleChange">
           </el-pagination>
-        </el-card>
+          <el-button v-if="selectTag!=0"
+                     type="info"
+                     size="mini"
+                     @click="getNewsList(0)">清除标签选中</el-button>
+
+        </div>
       </el-col>
       <!-- 右边 -->
       <el-col :span="6">
@@ -99,7 +83,6 @@ export default {
     // 获取总数
     this.getNewsList(0)
     this.getRecommend()
-    this.getTopList()
   },
   data() {
     return {
@@ -109,33 +92,38 @@ export default {
       newsList: [], //新闻列表
       total: 0, // 总数
       selectTag: 0, // 选择的标签
-      topList: [], // 置顶推荐
       loading: true,
     }
   },
   methods: {
     // 获取新闻详情
     getNew(id) {
-      this.$router.push('/newsItem?id=' + id)
+      //  const routeDate = this.$router.push('/newsItem?id=' + id)
+      // 打开一个新的标签页
+      const routeDate = this.$router.resolve({
+        path: '/newsItem',
+        query: { id: id },
+      })
+      window.open(routeDate.href, '_blank')
     },
     //处理分页
     async handleChange(current) {
       this.current = current
       this.getNewsList(this.selectTag)
     },
+    //点击标签，当前页为第一页
+    reloadCurrent() {
+      this.current = 1
+    },
     // 请求新闻列表
     async getNewsList(tagID) {
-      if (this.selectTag == tagID) {
-        this.selectTag = 0
-      } else {
-        this.selectTag = tagID
-      }
+      this.selectTag = tagID
       const { data: res } = await this.$http.get('/tabNews/getList', {
         params: {
           current: this.current,
           size: this.size,
           tagId: this.selectTag,
-          title:''
+          title: '',
         },
       })
       if (!res.success) {
@@ -155,11 +143,6 @@ export default {
       this.recommendList = res.data.recommendList
       this.loading = false
     },
-    // 获取置顶推荐
-    async getTopList() {
-      const { data: res } = await this.$http.get('/tabTop/topList')
-      this.topList = res.data.topList
-    },
   },
 }
 </script>
@@ -177,33 +160,44 @@ export default {
   }
 }
 .news_list {
-  height: 100%;
   background-color: #ffffff;
-}
-.news_item {
-  padding-bottom: 20px;
-  .news_content {
-    text-indent: 2rem;
+  padding: 20px;
+  border: 1px solid #ebeef5;
+  .news_item {
+    // padding-bottom: 20px;
+    .news_top {
+      .news_title {
+        cursor: pointer;
+      }
+      .news_title:hover {
+        color: #00965e;
+      }
+    }
+    .news_content {
+      text-indent: 2rem;
+    }
+    .news_info {
+      p {
+        margin-top: 10px;
+      }
+      .info_authorname {
+        cursor: pointer;
+        margin-right: 10px;
+      }
+      .info_authorname:hover {
+        color: #00965e;
+      }
+      .info_time {
+        margin-left: 10px;
+        margin-right: 10px;
+      }
+    }
   }
 }
+.el-pagination {
+  display: inline-block;
+}
 
-.info_authorname {
-  cursor: pointer;
-  margin-right: 10px;
-}
-.info_authorname:hover {
-  color: #00965e;
-}
-.info_time {
-  margin-left: 10px;
-  margin-right: 10px;
-}
-.news_title {
-  cursor: pointer;
-}
-.news_title:hover {
-  color: #00965e;
-}
 .recomentList-item {
   display: block;
   white-space: nowrap;

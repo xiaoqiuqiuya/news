@@ -7,7 +7,7 @@
       <el-col :offset="2"
               :span="16">
         <!-- 主体内容 -->
-        <el-card class="news_list">
+        <div class="publish">
           <el-alert v-if="news.id != 0"
                     title="修改文章"
                     type="success"
@@ -29,7 +29,7 @@
                           @change="change"></editor-bar>
             </el-form-item>
           </el-form>
-        </el-card>
+        </div>
       </el-col>
       <!-- 右边 -->
       <el-col :span="6"
@@ -197,9 +197,10 @@ export default {
     height: 100%;
   }
 }
-.news_list {
+.publish {
   height: 100%;
   background-color: #ffffff;
+  padding: 20px;
 }
 .news_item {
   padding-bottom: 20px;
