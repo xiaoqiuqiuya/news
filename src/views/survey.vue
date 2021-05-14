@@ -44,7 +44,6 @@
                        @current-change="handleCurrentChange">
         </el-pagination>
         </div>
-   
       </el-col>
     </el-row>
   </el-main>
@@ -88,7 +87,11 @@ export default {
       this.getSurveyList()
     },
     toSurveyInfo(id) {
-      this.$router.push('/surveyInfo?id=' + id)
+      const routeDate = this.$router.resolve({
+        path: '/newsItem',
+        query: { id: id },
+      })
+      window.open(routeDate.href, '_blank')
     },
     // 获取置顶问卷列表
     async getTopSurveyList() {

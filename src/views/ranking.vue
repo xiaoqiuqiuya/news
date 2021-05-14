@@ -4,52 +4,50 @@
     <!-- 间距20px -->
     <el-row>
       <!-- 偏移2格 -->
-      <el-col :offset="2"
-              :span="20">
+      <el-col :offset="2" :span="20">
         <!-- 主体内容 -->
         <el-row>
-          <el-col :span="16"
-                  :offset="4">
+          <el-col :span="16" :offset="4">
             <el-carousel :autoplay="false">
-              <el-carousel-item v-for="topSurvey in topSurveyList"
-                                :key="topSurvey.id">
-                <div class="top_list_title">
-                  {{topSurvey.title}}
-                </div>
-                <div class="top_list_description">{{topSurvey.description}}</div>
+              <el-carousel-item v-for="(item,index) in topList" :key="index">
+                <div class="top_list_title" @click="toTabNews(item.id)">{{item.title}}</div>
+                <div class="top_list_description">{{item.description}}</div>
               </el-carousel-item>
             </el-carousel>
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="7"
-                  :offset="1">
-            <el-card :body-style="cardBodyStyle"
-                     shadow="hover">
-              <div class="card_survey_title">
-                月度榜单
-              </div>
-              <span class="card_survey_description">月度榜单月度榜单月度榜单月度榜单月度榜单月度榜单</span>
+          <el-col :span="7" :offset="1">
+            <el-card :body-style="cardBodyStyle" shadow="hover">
+              <div class="rank_sort">月度榜单</div>
+              <p
+                :class="'rank_title rank_title'+index"
+                v-for="(item,index) in monthSet"
+                :key="index"
+                @click="toTabNews(item.id)"
+              >{{index+1}}.{{item.title}}</p>
             </el-card>
           </el-col>
-          <el-col :span="7"
-                  :offset="1">
-            <el-card :body-style="cardBodyStyle"
-                     shadow="hover">
-              <div class="card_survey_title">
-                月度榜单
-              </div>
-              <span class="card_survey_description">月度榜单月度榜单月度榜单月度榜单月度榜单月度榜单</span>
+          <el-col :span="7" :offset="1">
+            <el-card :body-style="cardBodyStyle" shadow="hover">
+              <div class="rank_sort">每周必看</div>
+              <p
+                :class="'rank_title rank_title'+index"
+                v-for="(item,index) in weekSet"
+                :key="index"
+                @click="toTabNews(item.id)"
+              >{{index+1}}.{{item.title}}</p>
             </el-card>
           </el-col>
-          <el-col :span="7"
-                  :offset="1">
-            <el-card :body-style="cardBodyStyle"
-                     shadow="hover">
-              <div class="card_survey_title">
-                月度榜单
-              </div>
-              <span class="card_survey_description">月度榜单月度榜单月度榜单月度榜单月度榜单月度榜单</span>
+          <el-col :span="7" :offset="1">
+            <el-card :body-style="cardBodyStyle" shadow="hover">
+              <div class="rank_sort">今日热榜</div>
+              <p
+                :class="'rank_title rank_title'+index"
+                v-for="(item,index) in daySet"
+                :key="index"
+                @click="toTabNews(item.id)"
+              >{{index+1}}.{{item.title}}</p>
             </el-card>
           </el-col>
         </el-row>
@@ -60,54 +58,63 @@
 
 <script>
 export default {
-  created: async function () {
-    this.getSurveyList()
-    this.getTopSurveyList()
+  created: async function() {
+    this.getRange();
   },
   data() {
     return {
       cardBodyStyle: {
-        background: '#e5e9f2',
-        height: '400px',
+        background: "#e5e9f2",
+        height: "400px"
       },
-      userId: 0,
-      surveyList: [],
-      topSurveyList: [],
-      current: 1,
-      size: 6,
-      total: 0,
-    }
+      daySet: [],
+      weekSet: [],
+      monthSet: [],
+      topList: []
+    };
   },
   methods: {
-    //处理分页
-    handleCurrentChange(current) {
-      this.current = current
-      this.getSurveyList()
+    // 获取新闻详情
+    toTabNews(id) {
+      //  const routeDate = this.$router.push('/newsItem?id=' + id)
+      // 打开一个新的标签页
+      const routeDate = this.$router.resolve({
+        path: "/newsItem",
+        query: { id: id }
+      });
+      window.open(routeDate.href, "_blank");
     },
-    toSurveyInfo(id) {
-      this.$router.push('/surveyInfo?id=' + id)
-    },
-    // 获取置顶问卷列表
-    async getTopSurveyList() {
-      const { data: res } = await this.$http.get('/surveyInfo/getTopSurveyList')
+    // 获取新闻排行榜
+    async getRange() {
+      const { data: res } = await this.$http.get("/range/getRange");
       if (!res.success) {
-        return this.$message.error(res.message)
+        return this.$message.error(res.message);
       }
-      this.topSurveyList = res.data.topSurveyList
-    },
-    // 获取问卷列表
-    async getSurveyList() {
-      const { data: res } = await this.$http.get('/surveyInfo/getSurveyList', {
-        params: { current: this.current, size: this.size, userId: this.userId },
-      })
-      if (!res.success) {
-        return this.$message.error(res.message)
-      }
-      this.surveyList = res.data.surveyList
-      this.total = res.data.total
-    },
-  },
-}
+      this.daySet = res.data.daySet;
+      this.weekSet = res.data.weekSet;
+      this.monthSet = res.data.monthSet;
+      // 避免重复
+      this.topList.push(this.monthSet[0]);
+      var flag = false;
+      this.weekSet.forEach(item => {
+        if (item.id != this.monthSet[0].id) {
+          if (!flag) {
+            this.topList.push(item);
+            flag = !flag;
+          }
+        }
+      });
+      this.daySet.forEach(item => {
+        if (item.id != this.monthSet[0].id) {
+          if (flag) {
+            this.topList.push(item);
+            flag = !flag;
+          }
+        }
+      });
+    }
+  }
+};
 </script>
 <style lang="less" scoped>
 .container {
@@ -127,25 +134,9 @@ export default {
 .el-col {
   border-radius: 4px;
 }
-.toSurveyInfo {
-  color: black;
-}
-.toSurveyInfo:visited {
-  text-decoration: none;
-}
-.toSurveyInfo:link {
-  text-decoration: none;
-}
-.toSurveyInfo:hover {
-  text-decoration: none;
-}
-.toSurveyInfo:active {
-  text-decoration: none;
-}
-.toSurveyInfo:focus {
-  text-decoration: none;
-}
+
 .top_list_title {
+  cursor: pointer;
   padding: 20px 0;
   text-align: center;
   font-size: 2rem;
@@ -157,7 +148,7 @@ export default {
 }
 .el-card {
   margin: 10px 5px;
-  .card_survey_title {
+  .rank_sort {
     cursor: pointer;
     font-weight: bolder;
     padding: 0.5rem;
@@ -166,43 +157,30 @@ export default {
   }
 }
 
-.el-carousel__item h3 {
-  color: #475669;
-  font-size: 14px;
-  opacity: 0.75;
-  line-height: 150px;
-  margin: 0;
+.rank_title0 {
+  color: #fe2d46;
+}
+.rank_title1 {
+  color: #f60;
+}
+.rank_title2 {
+  color: #faa90e;
 }
 
-.el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
+.rank_title {
+  margin: 5px 0;
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  &:hover {
+    background-color: #fef0f0;
+    color: #67c23a;
+  }
 }
-
-.el-carousel__item:nth-child(2n + 1) {
-  background-color: #d3dce6;
-}
-.bg-purple-dark {
-  background: #99a9bf;
-}
-.bg-purple {
-  background: #d3dce6;
-}
-.bg-purple-light {
-  background: #e5e9f2;
-}
-.grid-content {
-  margin: 20px;
-  border-radius: 4px;
-  min-height: 36px;
-}
-.row-bg {
-  padding: 10px 0;
-  background-color: #f9fafc;
-}
-.page {
-  text-align: center;
-}
-.card_survey_description {
-  text-indent: 2rem;
+.el-carousel {
+  background-color: #e5e9f2;
 }
 </style>

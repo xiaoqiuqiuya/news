@@ -76,8 +76,7 @@
           </el-form-item>
 
           <el-form-item>
-            <el-button type="warning"
-                       class="btn_handelSave">暂 存</el-button>
+            
             <el-button type="primary"
                        class="btn_handelPublish"
                        @click="handelPublish(1)">发 布</el-button>
@@ -89,7 +88,7 @@
       <el-collapse-item :title="surveyInfo.title"
                         v-for="surveyInfo in surveyInfoList"
                         :key="surveyInfo.id">
-        <span>
+        <span @click="toSurveyInfo(surveyInfo.id)">
           {{surveyInfo.description}}
         </span>
       </el-collapse-item>
@@ -175,6 +174,11 @@ export default {
     }
   },
   methods: {
+
+     toSurveyInfo(id) {
+      this.$router.push('/surveyInfo?id=' + id)
+      
+    },
     handleCurrentChange(current) {
       this.current = current
       this.getPostedSurveyInfoList()

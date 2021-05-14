@@ -4,7 +4,7 @@
       <div class="serarch_input">
 
         <el-input v-model="searchContent"
-                  placeholder="按投稿标题搜索"
+                  placeholder="按内容搜索"
                   maxlength="30">
           <el-button slot="append"
                      icon="el-icon-search"

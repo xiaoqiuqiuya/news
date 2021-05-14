@@ -17,6 +17,7 @@
         </div>
         <el-card class="news_list">
           <el-collapse v-model="activeNames">
+            
             <el-collapse-item title="添加今日进程"
                               name="1">
               <div>

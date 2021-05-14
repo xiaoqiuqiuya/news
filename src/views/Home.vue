@@ -11,18 +11,9 @@
           <el-link href="/index">首页</el-link>
         </el-menu-item>
 
-        <el-submenu index="2">
-          <template slot="title">新闻热榜</template>
-          <el-menu-item index="2-1">
-            <el-link href="/ranking">周榜</el-link>
-          </el-menu-item>
-          <el-menu-item index="2-2">
-            <el-link href="/ranking">月榜</el-link>
-          </el-menu-item>
-          <el-menu-item index="2-3">
-            <el-link href="/ranking">年度大事件</el-link>
-          </el-menu-item>
-        </el-submenu>
+        <el-menu-item index="2">
+          <el-link href="/ranking">排行榜</el-link>
+        </el-menu-item>
 
         <el-menu-item index="3">
           <el-link href="/messageBoard">留言板</el-link>
